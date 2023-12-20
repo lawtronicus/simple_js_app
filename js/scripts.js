@@ -1,4 +1,4 @@
-// create protected pokemon object that cannot be modified
+// create protected pokemon object
 
 const pokemonRepository = (function() {
     const myPokemon = [
