@@ -46,6 +46,13 @@ To view all Pokémon in the repository, use the `getAll` method
     const allPokemon = pokemonRepository.getAll();
     console.log(allPokemon);
 
+## Finding a Pokémon by Name
+
+To find all Pokémon that match a particular name, use the findPokemonByName method:
+
+    const foundPokemon = pokemonRepository.findPokemonByName('Pikachu');
+    console.log(foundPokemon);
+
 ## Contributing
 
 While this project is primarily a personal practice project, anyone interested in the code or the approach is free to fork it and experiment on their own. Please note that this is a solo project for learning purposes, and as such, I am not looking to accept pull requests or collaborate directly on this repository. Feel free to use it as a reference or for inspiration in your own projects!
