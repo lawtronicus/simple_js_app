@@ -1,6 +1,6 @@
 // declare variables
 
-let pokemonList = [
+const pokemonList = [
     {
         name: 'Bulbasur',
         height: 2.04,
