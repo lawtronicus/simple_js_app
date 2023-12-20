@@ -1,6 +1,6 @@
 // create protected pokemon object that cannot be modified
 
-const basePokemonList = (function() {
+const pokemonRepository = (function() {
     const myPokemon = [
         {
             name: 'Bulbasur',
@@ -30,7 +30,27 @@ const basePokemonList = (function() {
             category: 'mouse',
             types: ['electric'] 
         }];
-    return myPokemon 
+        
+        /**
+         * Adds a new Pokémon to the repository.
+         * @param {Object} pokemon - The Pokémon object to add. 
+         *                           Should have properties like name, height, weight, category, and types.
+         */
+        function add(pokemon) {
+            myPokemon.push(pokemon);
+        }
+
+        /**
+         * Retrieves all Pokémon from the repository.
+         * @return {Object[]} An array of all Pokémon objects in the repository.
+         */
+        function getAll() {
+            return myPokemon;
+        }
+    return {
+        add: add,
+        getAll: getAll
+    };
 })();
 
 /**
@@ -62,4 +82,4 @@ function writePokemonListToDoc(pokemonArray) {
     });
 };
 
-writePokemonListToDoc(addBignessProperty(basePokemonList));
+writePokemonListToDoc(addBignessProperty(pokemonRepository.getAll()));
