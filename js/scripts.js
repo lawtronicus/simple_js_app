@@ -30,13 +30,30 @@ const pokemonRepository = (function() {
             category: 'mouse',
             types: ['electric'] 
         }];
+
+        /**
+         * Validates if the input is a correct Pokémon object.
+         * @param {Object} pokemon - The object to validate.
+         * @return {boolean} True if the object is a valid Pokémon, false otherwise. Should be an object and have at least one of name, height, weight, category, types, or isBig, and nothing else
+         */
+        function isValidPokemon(obj) {
+            const validKeys = ['name', 'height', 'weight', 'category', 'types', 'isBig'];
+            const objKeys = Object.keys(obj);
+
+            return (typeof pokemon !== 'object' || pokemon === null || Array.isArray(pokemon)) && 
+                    objKeys.every(key => validKeys.includes(key)) &&
+                    validKeys.some(key => objKeys.includes(key));
+        }
         
         /**
-         * Adds a new Pokémon to the repository.
+         * Adds a new Pokémon to the repository if it is valid.
          * @param {Object} pokemon - The Pokémon object to add. 
-         *                           Should have properties like name, height, weight, category, and types.
          */
         function add(pokemon) {
+            if (!isValidPokemon(pokemon)) {
+                console.error('Invalid Pokemon: incorrect properties.');
+                return;
+            }
             myPokemon.push(pokemon);
         }
 
@@ -47,9 +64,24 @@ const pokemonRepository = (function() {
         function getAll() {
             return myPokemon;
         }
+
+        /** 
+         * Finds pokemon that match a particular name
+         * @param {string} pokemonName - The name of the pokemon to find
+         * @return {Object[]} - An array of pokemon objects matching the name.
+        */
+        function findPokemonByName(pokemonName) {
+            if (typeof pokemonName !== 'string') {
+                console.error('pokemonName must be a string');
+                return;
+            }
+            return pokemonRepository.getAll().filter(pokemon => pokemon.name.toLowerCase() === pokemonName.toLowerCase());
+        }
+
     return {
         add: add,
-        getAll: getAll
+        getAll: getAll,
+        findPokemonByName: findPokemonByName
     };
 })();
 
@@ -83,3 +115,5 @@ function writePokemonListToDoc(pokemonArray) {
 };
 
 writePokemonListToDoc(addBignessProperty(pokemonRepository.getAll()));
+
+console.log(pokemonRepository.findPokemonByName("pikachu"))
