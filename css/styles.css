@@ -1,0 +1,223 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-image: url('/images/pokemon-forest.jpg');
+    background-size: cover;
+}
+
+
+.box {
+    position: relative;
+    border-radius: 20px;
+    transform-style: preserve-3d; 
+    background-color: rgb(255, 239, 138);
+}
+
+.box .pokemon-card {
+    position: relative;
+    height: 450px;
+    width: 300px;
+    background-image: url('/images/151-Mew.webp');
+    background-size: 100%;
+    background-repeat: no-repeat;
+    background-position: center 80%;
+    border: 4px solid rgb(255, 221, 0);
+    border-top: 6px solid rgb(255, 221, 0);
+    border-left: 6px solid rgb(255, 221, 0);
+    border-radius: 20px;
+    box-shadow: 0 25px 45px rgba(0,0,0,0.05);
+    transform-style: preserve-3d;
+    transition: .5s
+}
+
+.box:hover .pokemon-card {
+    background-position: center 40%;
+}
+
+.elements {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    background: rgba(255, 255, 255, .5);
+
+    border: 4px solid rgb(255, 221, 0);
+    box-shadow: none;
+    border-radius: 10px;
+}
+
+.elements.bg {
+    top: 50px;
+    left: 200px;
+    width: 80px;
+    height: 80px;
+    transition: 0.5s;
+    z-index: 11;
+    border-radius: 50%;
+}
+
+.box:hover .elements.bg {
+    top: 50px;
+    left: 300px;
+    width: 150px;
+    height: 150px;
+    transform: translateZ(140px);
+}
+
+.elements.bg img{
+    position: absolute;
+    border-radius: 50%;
+/*    top: 8px;
+    left: 8px; */
+    width: calc(100%);
+    height: calc(100%);
+/*    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.5);
+    border-top: 2px solid rgba(255,255,255,0.75);
+    border-left: 2px solid rgba(255,255,255,0.75);
+    box-shadow: 25px 25px 45px rgba(0,0,0,0.02); */
+/*    opacity: 0; */
+    transition: 0.5s;
+}
+/*
+.elements.bg::before {
+    content: '';
+    position: absolute;
+    inset:0;
+    background:url("/images/151-Mew.webp");
+    background-size: 60px;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity:0;
+    transition: 0.5s;
+}
+*/
+
+/*
+.box:hover .elements.bg::before {
+    opacity: 1;
+}
+*/
+
+.elements.imgBx {
+    width: 300px;
+    height: 140px;
+    transition: 0.5s;
+    z-index: 10;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+.elements.imgBx img{
+    position: absolute;
+    width: calc(100%);
+    height: calc(100%);
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+/*    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.5);
+    border-top: 2px solid rgba(255,255,255,0.75);
+    border-left: 2px solid rgba(255,255,255,0.75);
+    box-shadow: 25px 25px 45px rgba(0,0,0,0.02); */
+/*    opacity: 0; */
+    transition: 0.5s;
+}
+
+/*
+.box:hover .elements.imgBx img {
+    opacity: 1;
+}
+*/
+
+.box:hover .elements.imgBx {
+    top: 0;
+    right: 250px;
+    width: 312px;
+    height: 168px;
+    transform: translateZ(100px);
+}
+
+.elements.name {
+    top: 275px;
+    left: 20px;
+    width: 40%;
+    height: 24px;
+    padding: 8px;
+    color: white;
+    background: transparent;
+    border: none;
+    border-radius: 50px;
+    box-shadow: none;
+/*    opacity: 0; */
+    transition: 0.5s;
+    transition-delay: 0.1s;
+    color: white;
+    background-color: rgb(15, 147, 255);
+    z-index: 2;
+    display: flex;
+    align-items: center;
+
+}
+
+/*
+.box:hover .elements.name {
+    top: 240px;
+    border: none;
+    box-shadow: none;
+}
+*/
+
+.elements.content {
+    top: 300px;
+    width: 100%;
+    min-height: 150px;
+    text-align: center;
+    z-index: 1;
+    transition: 1s;
+    background-color: rgb(255, 221, 0);
+    display: flex;
+    justify-content: center;
+}
+  
+
+.box:hover .elements.content {
+    top: 350px;
+    transform: translateZ(160px);
+}
+
+
+/*
+.box:hover .elements.content p {
+    opacity: 1;
+} */
+
+.poke-data {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.labels, .values {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.labels {
+    align-items: end;
+}
+
+.values {
+    align-items: start;
+}

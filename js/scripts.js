@@ -114,6 +114,3 @@ function writePokemonListToDoc(pokemonArray) {
     });
 };
 
-writePokemonListToDoc(addBignessProperty(pokemonRepository.getAll()));
-
-console.log(pokemonRepository.findPokemonByName("pikachu"))
