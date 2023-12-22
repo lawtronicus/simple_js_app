@@ -78,10 +78,40 @@ const pokemonRepository = (function() {
             return pokemonRepository.getAll().filter(pokemon => pokemon.name.toLowerCase() === pokemonName.toLowerCase());
         }
 
+        /**
+         * adds a Pokemon to the pokemon list
+         * @param {Object} pokemon - a pokemon object, the name value of which will be added to the list
+         */
+        function addListItem(pokemon) {
+            const pokemonList = document.querySelector("#pokemon-list");
+            let listItem = document.createElement('li');
+            let button = document.createElement('button');
+            let pokemonName = document.createTextNode(pokemon.name)
+    
+            button.classList.add('poke-button');         
+            button.appendChild(pokemonName);
+            button.addEventListener('click', function () {
+                showDetails(pokemon);
+            });
+            listItem.appendChild(button);
+            pokemonList.appendChild(listItem);
+        };
+
+        /**
+         * logs pokemon name to the console
+         * @param {*} pokemon - a pokemon object
+         */
+
+        function showDetails(pokemon) {
+            console.log(pokemon.name);
+        };
+
     return {
         add: add,
         getAll: getAll,
-        findPokemonByName: findPokemonByName
+        findPokemonByName: findPokemonByName,
+        addListItem: addListItem,
+        showDetails: showDetails
     };
 })();
 
@@ -90,7 +120,7 @@ const pokemonRepository = (function() {
  * @param {Object[]} pokemonArray - Array of pokemon objects.
  * @return {Object[]} New array of pokemon objects with 'isBig' property added.
  */
-
+/*
 function addBignessProperty(pokemonArray) {
     return pokemonArray.map(pokemon => {
         return {
@@ -99,18 +129,27 @@ function addBignessProperty(pokemonArray) {
         };
     });
  };
-
+*/
 /**
  * Writes information about each pokemon to the document, including a special note if the pokemon is big.
  * @param {Object[]} pokemonArray - Array of pokemon objects with 'isBig' property.
  */
-
+/*
 function writePokemonListToDoc(pokemonArray) {
+    const pokemonList = document.querySelector("#pokemon-list");
+    console.log(pokemonList);
     pokemonArray.forEach(pokemon => {
-        const message = pokemon.isBig
-            ? `${pokemon.name} - height: ${pokemon.height} - Wow! That's big! <br>`
-            : `${pokemon.name} - height: ${pokemon.height}<br>`;
-        document.write(message);
+        let listItem = document.createElement('li');
+        let button = document.createElement('button');
+        let pokemonName = document.createTextNode(pokemon.name)
+
+        button.classList.add('poke-button');
+        
+        button.appendChild(pokemonName);
+        listItem.appendChild(button);
+        pokemonList.appendChild(listItem);
     });
 };
+*/
 
+pokemonRepository.getAll().forEach(pokemon => pokemonRepository.addListItem(pokemon));
