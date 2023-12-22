@@ -60,6 +60,7 @@ body {
     background-color: rgb(15, 147, 255);
     color: white;
     width: 275px;
+    cursor: pointer;
 }
 
 /* uses class name from vanilla-tilt.js and allows element and children to move and appear in 3d */
