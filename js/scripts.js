@@ -11,11 +11,11 @@ let pokemonRepository = (function() {
          * @param {Object} pokemon - The object to validate.
          * @return {boolean} True if the object is a valid Pokémon, false otherwise. Should be an object and have at least one of name, height, weight, category, types, or isBig, and nothing else
          */
-        function isValidPokemon(obj) {
-            const validKeys = ['name', 'height', 'weight', 'category', 'types', 'isBig'];
-            const objKeys = Object.keys(obj);
+        function isValidPokemon(pokemon) {
+            const validKeys = ['name', 'height', 'weight', 'category', 'types', 'isBig', 'detailsUrl'];
+            const objKeys = Object.keys(pokemon);
 
-            return (typeof pokemon !== 'object' || pokemon === null || Array.isArray(pokemon)) && 
+            return (typeof pokemon === 'object' || pokemon != null || !(Array.isArray(pokemon))) && 
                     objKeys.every(key => validKeys.includes(key)) &&
                     validKeys.some(key => objKeys.includes(key));
         }
@@ -24,18 +24,14 @@ let pokemonRepository = (function() {
          * Adds a new Pokémon to the repository if it is valid.
          * @param {Object} pokemon - The Pokémon object to add. 
          */
-        function add(pokemon) {
 
-            /* THIS VALIDATION MUST BE RE-ADDED
+        function add(pokemon) {
             if (!isValidPokemon(pokemon)) {
                 console.error('Invalid Pokemon: incorrect properties.');
                 return;
             }
-            */
-
             myPokemon.push(pokemon);
         }
-
         /**
          * Retrieves all Pokémon from the repository.
          * @return {Object[]} An array of all Pokémon objects in the repository.
@@ -62,7 +58,7 @@ let pokemonRepository = (function() {
          * @param {Object} pokemon - a pokemon object, the name value of which will be added to the list
          */
         function addListItem(pokemon) {
-            const pokemonList = document.querySelector("#pokemon-list");
+            const pokemonList = document.querySelector('#pokemon-list');
             let listItem = document.createElement('li');
             let button = document.createElement('button');
             let pokemonName = document.createTextNode(pokemon.name)
