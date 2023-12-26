@@ -48,6 +48,7 @@ body {
     list-style-type: none;
     flex-direction: column;
     gap: 12px;
+    overflow-y: auto;
 }
 
 
@@ -149,7 +150,7 @@ body {
     content: '';
     position: absolute;
     inset:0;
-    background:url("/images/151-Mew.webp");
+    background:url('/images/151-Mew.webp');
     background-size: 60px;
     background-position: center;
     background-repeat: no-repeat;
