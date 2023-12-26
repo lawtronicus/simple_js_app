@@ -30,6 +30,8 @@ body {
 
 #pokedex {
     display: flex;
+    flex-direction: column;
+    gap: 24px;
     height: 450px;
     width: 300px;
     background-color: rgb(255, 239, 138);
@@ -39,6 +41,7 @@ body {
     padding: 8px;
     justify-self: start;
     margin-left: 240px;
+    padding-top: 12px;
 }
 
 /* handle styles for pokemon-list ul */
