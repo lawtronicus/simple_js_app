@@ -14,7 +14,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-image: url('/images/pokemon-forest.jpg');
+    background-image: url('../images/pokemon-forest.jpg');
     background-size: cover;
 }
 
@@ -79,7 +79,7 @@ body {
 .box .pokemon-card {
     height: 450px;
     width: 300px;
-    background-image: url('/images/151-Mew.webp');
+    background-image: url('../images/151-Mew.webp');
     background-size: 100%;
     background-repeat: no-repeat;
     background-position: center 80%;
