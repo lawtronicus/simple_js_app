@@ -44,6 +44,11 @@ body {
     padding-top: 12px;
 }
 
+#pokedex > h2 {
+    margin-left: 4px;
+    color: rgb(10, 104, 181);
+}
+
 /* handle styles for pokemon-list ul */
 
 #pokemon-list {
@@ -67,9 +72,12 @@ body {
     cursor: pointer;
 }
 
-/* uses class name from vanilla-tilt.js and allows element and children to move and appear in 3d */
-
 .box {
+    display: none;
+}
+/* uses class name from vanilla-tilt.js and allows element and children to move and appear in 3d */
+.box.is-visible {
+    display: flex;
     border-radius: 20px;
     transform-style: preserve-3d; 
     background-color: rgb(255, 239, 138);
@@ -83,13 +91,11 @@ body {
 .box .pokemon-card {
     height: 450px;
     width: 300px;
-    background-image: url('../images/151-Mew.webp');
-    background-size: 100%;
+    background-size: 80%;
     background-repeat: no-repeat;
-    background-position: center 80%;
+    background-position: center 55%;
     border: 4px solid rgb(255, 221, 0);
     border-radius: 20px;
-    box-shadow: 0 25px 45px rgba(0,0,0,0.05);
     transform-style: preserve-3d;
     transition: .5s
 }
@@ -100,14 +106,17 @@ body {
     background-position: center 40%;
 }
 
+/* set style for sprite image */
+#pokemon_sprite {
+    width: 35%;
+    left: 100px;
+}
+
 /* set base styles for all children of .pokemon-card */
 
 .elements {
     position: absolute;
-    width: 100px;
     height: 100px;
-    background: rgba(255, 255, 255, .5);
-
     border: 4px solid rgb(255, 221, 0);
     box-shadow: none;
     border-radius: 10px;
@@ -116,59 +125,53 @@ body {
 /* set styles for image of evolved pokemon form */
 
 .elements.bg {
-    top: 50px;
-    left: 200px;
     width: 80px;
     height: 80px;
     transition: 0.5s;
     z-index: 11;
     border-radius: 50%;
+    background-image: url('../images/evolve.webp');
+    background-size: cover;
+}
+
+.elements.bg2 {
+    top: 50px;
+    left: 200px;
+}
+
+.elements.bg1 {
+    top: 50px;
+    left: 24px;
 }
 
 .box:hover .elements.bg {
-    top: 50px;
-    left: 300px;
     width: 150px;
     height: 150px;
     transform: translateZ(140px);
 }
 
+.box:hover .elements.bg1 {
+    top: -150px;
+    left: 100px;
+}
+
+.box:hover .elements.bg2 {
+    top: 50px;
+    left: 300px;
+}
+
+/*
 .elements.bg img{
+
     position: absolute;
     border-radius: 50%;
-/*    top: 8px;
-    left: 8px; */
     width: calc(100%);
     height: calc(100%);
-/*    border-radius: 8px;
-    border: 1px solid rgba(255,255,255,0.5);
-    border-top: 2px solid rgba(255,255,255,0.75);
-    border-left: 2px solid rgba(255,255,255,0.75);
-    box-shadow: 25px 25px 45px rgba(0,0,0,0.02); */
-/*    opacity: 0; */
-    transition: 0.5s;
-}
-/*
-.elements.bg::before {
-    content: '';
-    position: absolute;
-    inset:0;
-    background:url('/images/151-Mew.webp');
-    background-size: 60px;
-    background-position: center;
-    background-repeat: no-repeat;
-    opacity:0;
     transition: 0.5s;
 }
 */
 
-/*
-.box:hover .elements.bg::before {
-    opacity: 1;
-}
-*/
 
-/* set styles for pokemon card top image */
 
 .elements.imgBx {
     width: 300px;
@@ -215,7 +218,6 @@ body {
 .elements.name {
     top: 275px;
     left: 20px;
-    width: 40%;
     height: 24px;
     padding: 8px;
     color: white;

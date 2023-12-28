@@ -2,7 +2,7 @@
 
 let pokemonRepository = (function() {
     let myPokemon = [];
-    let apiURL = 'https://pokeapi.co/api/v2/pokemon/?limit=150';
+    let apiURL = 'https://pokeapi.co/api/v2/pokemon/?limit=151';
 
     //
 
@@ -125,12 +125,14 @@ let pokemonRepository = (function() {
             return fetch(pokemon.detailsUrl).then(function(response) {
                 return response.json();
             }).then(function(json) {
-                console.log(`The pokemon is ${pokemon.name}`);
-                addDetails(pokemon.name, 'height', json.height);
-                addDetails(pokemon.name, 'weight', json.weight);
-                addDetails(pokemon.name, 'types', json.types);
-                addDetails(pokemon.name, 'imgUrls', json.sprites);
-                addDetails(pokemon.name, 'nextForm', )
+                let detailsObject = {
+                    height: json.height,
+                    weight: json.weight,
+                    types: json.types,
+                    imgUrls: json.sprites
+                }
+                addDetails(pokemon, detailsObject);
+                return detailsObject;
             }).catch(function(e) {
                 console.error(e);
             })
@@ -147,21 +149,168 @@ let pokemonRepository = (function() {
          * @param {string} key - The property key in the Pokémon object that will be added or updated.
          * @param {any} value - The value to be assigned to the specified key in the Pokémon object.
          */
-        function addDetails(pokemonName, key, value) {
-            pokemonRepository.findPokemonByName(pokemonName)[key] = value;
+        function addDetails(pokemon, detailsObject) {
+            Object.keys(detailsObject).forEach(function(key) {
+                pokemon[key] = detailsObject[key];
+            })
         }
+
+        function parseEvolutionaryTree(evolutionaryTreeJson) {
+            let pokemonForms = [];
+
+            function traverse(evolutionaryStep) {
+                if (evolutionaryStep.species) {
+                    pokemonForms.push(evolutionaryStep.species.name); // add species name
+                }
+
+                // Check if 'evolves_to' is not empty and call the function recursively if not
+                if (evolutionaryStep.evolves_to && evolutionaryStep.evolves_to.length > 0) {
+                    evolutionaryStep.evolves_to.forEach(nextStep => traverse(nextStep));
+                }
+            }
+            
+            // start traversal from top level, which has a slightly different structure
+            if (evolutionaryTreeJson && evolutionaryTreeJson.chain) {
+                traverse(evolutionaryTreeJson.chain);
+            }
+
+            traverse(evolutionaryTreeJson);
+            return pokemonForms;
+        }
+
+        function deriveEvolutionaryTree(pokemon){
+            return getEvolutionaryTreeUrl(pokemon)
+            .then(evolutionaryChainUrl => fetch(evolutionaryChainUrl))
+            .then(response => response.json())
+            .then(json => parseEvolutionaryTree(json))
+            .catch(error => console.error("Error in fetching evolutionary tree:", error));
+        }
+
+        function getEvolutionaryTreeUrl(pokemon) {
+            pokemonName = pokemon.name;
+            evolutionaryTreeUrl = `https://pokeapi.co/api/v2/pokemon-species/${pokemonName}`;
+            return fetch (evolutionaryTreeUrl).then(function(response) {
+                return response.json();
+            }).then(function(speciesDetails){
+                evolutionaryChainUrl = speciesDetails['evolution_chain']['url'];
+                return evolutionaryChainUrl;
+            })
+        }
+
+        function determineSideImages(pokemon, evolutionArray) {
+
+            let imageOrder = {
+                leftImage: "",
+                rightImage: ""
+            };
+
+            console.log(evolutionArray);
+            if (!evolutionArray.includes(pokemon.name)) {
+                throw "The pokemon is not in the array";
+            }
+
+            if (evolutionArray.length >= 3) {
+
+                if (evolutionArray.indexOf(pokemon.name) === 0) {
+                    imageOrder.leftImage = evolutionArray[1];
+                    imageOrder.rightImage = evolutionArray[2];
+                } else if (evolutionArray.indexOf(pokemon.name) === 1) {
+                    imageOrder.leftImage = evolutionArray[0];
+                    imageOrder.rightImage = evolutionArray[2];
+                } else {
+                    imageOrder.leftImage = evolutionArray[0];
+                    imageOrder.rightImage = evolutionArray[1];
+                }
+
+            } else if (evolutionArray.length === 2) {
+                if (evolutionArray.indexOf(pokemon.name) === 0) {
+                    imageOrder.leftImage = null;
+                    imageOrder.rightImage = evolutionArray[1];
+                } else if (evolutionArray.indexOf(pokemon.name) === 1) {
+                    imageOrder.leftImage = evolutionArray[0];
+                    imageOrder.rightImage = null;
+                }
+            } else {
+                imageOrder.leftImage = null;
+                imageOrder.rightImage = null;
+            }
+
+            return imageOrder;
+
+        };
 
         /**
          * logs pokemon name to the console
          * @param {*} pokemon - a pokemon object
          */
         function showDetails(pokemon) {
-            pokemonRepository.loadDetails(pokemon);
-            setTimeout(() => {
-                console.log(pokemon)
-            },500)
+
+            let promise1 = loadDetails(pokemon);
+            let promise2 = deriveEvolutionaryTree(pokemon);
+
+            Promise.all([promise1, promise2])
+                .then(([detailsObject, formsArray]) => {
+                    const updatedPokemon = pokemonRepository.findPokemonByName(pokemon.name);
+
+                    // Determine order of side images
+                    let sideImages = determineSideImages(pokemon, formsArray);
+                    console.log(sideImages);
+
+                    // Get document elements to be updated
+                    const pokeName = document.querySelector('.name > h4');
+                    const pokeHeightValue = document.querySelector('.values > .poke-height');
+                    const pokeWeightValue = document.querySelector('.values > .poke-weight');
+                    const pokeTypesValue = document.querySelector('.values > .poke-types');
+                    const cardBackgroundDiv = document.querySelector('.pokemon-card');
+                    const divForSprite = document.querySelector('.imgBx');
+                    
+                    let sprite = document.getElementById('pokemon_sprite');
+
+                    // remove existing sprite image if it exists
+                    if (sprite) {
+                        sprite.remove();
+                    }
+                    // create img element for sprite
+                    const pokeImageElement = document.createElement("img");
+
+                    // get link for background image
+                    const cardBackgroundImage = updatedPokemon.imgUrls.other['official-artwork']['front_default'];
+
+                    // get link for sprite image
+                    const pokeImage = updatedPokemon.imgUrls.other['dream_world']['front_default']
+
+
+
+                    if (pokeName && pokeHeightValue && pokeWeightValue && pokeTypesValue && updatedPokemon) {
+                        pokeName.innerText = `Name: ${updatedPokemon.name.charAt(0).toUpperCase() + updatedPokemon.name.slice(1)}`;
+                        pokeHeightValue.innerText = `${updatedPokemon.height} decimeters`;
+                        pokeWeightValue.innerText = `${updatedPokemon.weight} hectograms`;
+
+                        // Transform tye types array to a string of type names
+                        let typeStr = updatedPokemon.types.map(typeItem => typeItem.type.name).join(', ');
+                        pokeTypesValue.innerText = typeStr;
+                        
+                        //change background image
+                        cardBackgroundDiv.style.backgroundImage = `url(${cardBackgroundImage})`;
+
+                        // change sprite image
+                        pokeImageElement.setAttribute("src", pokeImage);
+                        pokeImageElement.setAttribute("id", 'pokemon_sprite')
+                        divForSprite.append(pokeImageElement);
+
+                    } else {
+                        console.log("Attribute or Pokemon not found.");
+                    }
+                })
         }
 
+/*
+            loadDetails(pokemon);
+            pokeHeightValue = document.querySelector('.values > .poke-height');
+            pokeHeightValue.innerText = pokemon.height;
+            console.log(pokemon);
+        }
+*/
 
 
     return {
