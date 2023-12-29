@@ -2,6 +2,7 @@
 
 let pokemonRepository = (function() {
     let myPokemon = [];
+    let detailedPokemon = {};
     let apiURL = 'https://pokeapi.co/api/v2/pokemon/?limit=151';
 
     //
@@ -93,7 +94,7 @@ let pokemonRepository = (function() {
          * @returns {Promise} A Promise that resolves when the Pokémon list has been loaded and processed.
          *                    The Promise is rejected if there is an error during the fetch operation or data processing.
          */
-        function loadList (){
+        function loadList() {
             return fetch(apiURL).then(function(response) {
                 return response.json();
             }).then(function(json) {
@@ -104,6 +105,22 @@ let pokemonRepository = (function() {
                     };
                     add(pokemon);
                 });
+            }).catch(function (e) {
+                console.error(e);
+            })
+        }
+
+        function addPokemonToMyPokemon(pokemonName) {
+            let api = `https://pokeapi.co/api/v2/pokemon/${pokemonName}`;
+            return fetch(api).then(function(response) {
+                return response.json();
+            }).then(function(pokemon) {
+                    let newPokemon = {
+                        name: pokemon.name,
+                        detailsUrl: api
+                    };
+                    add(newPokemon);
+                    pokemonRepository.addListItem(newPokemon);
             }).catch(function (e) {
                 console.error(e);
             })
@@ -122,17 +139,28 @@ let pokemonRepository = (function() {
          *                    The Promise is rejected if there is an error during the fetch operation or data processing.
          */
         function loadDetails(pokemon) {
-            return fetch(pokemon.detailsUrl).then(function(response) {
-                return response.json();
-            }).then(function(json) {
+            // Check if details are already loaded 
+            if (detailedPokemon[pokemon.name]) {
+                return Promise.resolve(detailedPokemon[pokemon.name]);
+            }
+
+            // Fetch details and derive evolutionary tree
+            let detailsPromise = fetch(pokemon.detailsUrl).then(response => response.json());
+            let evolutionaryTreePromise = deriveEvolutionaryTree(pokemon);
+
+            return Promise.all([detailsPromise, evolutionaryTreePromise])
+            .then(([details, evolutionaryTree]) => {
+
                 let detailsObject = {
-                    height: json.height,
-                    weight: json.weight,
-                    types: json.types,
-                    imgUrls: json.sprites
+                    height: details.height,
+                    weight: details.weight,
+                    types: details.types.map(typeItem => typeItem.type.name),
+                    imgUrls: details.sprites,
+                    forms: evolutionaryTree
                 }
-                addDetails(pokemon, detailsObject);
-                return detailsObject;
+                //store details for future
+                detailedPokemon[pokemon.name] = detailsObject;
+                return detailedPokemon[pokemon.name];
             }).catch(function(e) {
                 console.error(e);
             })
@@ -197,15 +225,16 @@ let pokemonRepository = (function() {
             })
         }
 
-        function determineSideImages(pokemon, evolutionArray) {
+        function determineSideImageOrder(pokemon, evolutionArray) {
 
             let imageOrder = {
                 leftImage: "",
                 rightImage: ""
             };
 
-            console.log(evolutionArray);
             if (!evolutionArray.includes(pokemon.name)) {
+                console.log(pokemon.name);
+                console.log(evolutionArray);
                 throw "The pokemon is not in the array";
             }
 
@@ -236,8 +265,34 @@ let pokemonRepository = (function() {
             }
 
             return imageOrder;
-
         };
+
+
+        function showEvolutionaryTreeDetails(pokemon) {
+            let evolutionaryTree = detailedPokemon[pokemon.name].forms;
+            let detailPromises = evolutionaryTree.map(name => {
+                if (!detailedPokemon[name]) {
+                    // Details not loaded, fetch them
+                    // If pokemon not in myPokemonArray, add them
+                    if (!pokemonRepository.findPokemonByName(name)) {
+                        addPokemonToMyPokemon(name)
+                        .then(function() {
+                            let evolutionaryPokemon = pokemonRepository.findPokemonByName(name);
+                            return loadDetails(evolutionaryPokemon);
+                        });
+                    } else {
+                        let evolutionaryPokemon = pokemonRepository.findPokemonByName(name);
+                        return loadDetails(evolutionaryPokemon);
+                    }
+                } else {
+                    return Promise.resolve(detailedPokemon[name]);
+                }
+            });
+
+            return Promise.all(detailPromises)
+        }
+
+        //
 
         /**
          * logs pokemon name to the console
@@ -245,17 +300,11 @@ let pokemonRepository = (function() {
          */
         function showDetails(pokemon) {
 
-            let promise1 = loadDetails(pokemon);
-            let promise2 = deriveEvolutionaryTree(pokemon);
+        //    let promise1 = loadDetails(pokemon);
+        //    let promise2 = deriveEvolutionaryTree(pokemon);
 
-            Promise.all([promise1, promise2])
-                .then(([detailsObject, formsArray]) => {
-                    const updatedPokemon = pokemonRepository.findPokemonByName(pokemon.name);
-
-                    // Determine order of side images
-                    let sideImages = determineSideImages(pokemon, formsArray);
-                    console.log(sideImages);
-
+            loadDetails(pokemon)
+                .then((detailsObject) => {
                     // Get document elements to be updated
                     const pokeName = document.querySelector('.name > h4');
                     const pokeHeightValue = document.querySelector('.values > .poke-height');
@@ -263,31 +312,57 @@ let pokemonRepository = (function() {
                     const pokeTypesValue = document.querySelector('.values > .poke-types');
                     const cardBackgroundDiv = document.querySelector('.pokemon-card');
                     const divForSprite = document.querySelector('.imgBx');
+                    const leftImageDiv = document.querySelector('.bg1')
+                    const rightImageDiv = document.querySelector('.bg2');
                     
                     let sprite = document.getElementById('pokemon_sprite');
+
+                    let sideImages = document.querySelectorAll('.bg > img')
+                    console.log(sideImages);
 
                     // remove existing sprite image if it exists
                     if (sprite) {
                         sprite.remove();
                     }
+
+                    //hide side image divs
+                    leftImageDiv.style.visibility = "hidden";
+                    rightImageDiv.style.visibility = "hidden";
+                    //remove side images if they exist;
+                    if (sideImages != []) {
+                        sideImages.forEach(function(item) {
+                            item.remove();
+                        })
+                    }
+
+
                     // create img element for sprite
                     const pokeImageElement = document.createElement("img");
 
+                    // create img element for left image
+                    const leftImageElement = document.createElement("img");
+
+                    //create img element for right image
+                    const rightImageElement = document.createElement("img")
+
                     // get link for background image
-                    const cardBackgroundImage = updatedPokemon.imgUrls.other['official-artwork']['front_default'];
+                    const cardBackgroundImage = detailedPokemon[pokemon.name].imgUrls.other['official-artwork']['front_default'];
 
                     // get link for sprite image
-                    const pokeImage = updatedPokemon.imgUrls.other['dream_world']['front_default']
+                    let pokeImage;
 
-
-
-                    if (pokeName && pokeHeightValue && pokeWeightValue && pokeTypesValue && updatedPokemon) {
-                        pokeName.innerText = `Name: ${updatedPokemon.name.charAt(0).toUpperCase() + updatedPokemon.name.slice(1)}`;
-                        pokeHeightValue.innerText = `${updatedPokemon.height} decimeters`;
-                        pokeWeightValue.innerText = `${updatedPokemon.weight} hectograms`;
+                    if (detailedPokemon[pokemon.name].imgUrls.other['dream_world']['front_default']) {
+                        pokeImage = detailedPokemon[pokemon.name].imgUrls.other['dream_world']['front_default']
+                    } else {
+                        pokeImage = detailedPokemon[pokemon.name].imgUrls.other['home']['front_default']
+                    }
+                    if (pokeName && pokeHeightValue && pokeWeightValue && pokeTypesValue && detailedPokemon[pokemon.name]) {
+                        pokeName.innerText = `Name: ${pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)}`;
+                        pokeHeightValue.innerText = `${detailedPokemon[pokemon.name].height} decimeters`;
+                        pokeWeightValue.innerText = `${detailedPokemon[pokemon.name].weight} hectograms`;
 
                         // Transform tye types array to a string of type names
-                        let typeStr = updatedPokemon.types.map(typeItem => typeItem.type.name).join(', ');
+                        let typeStr = detailedPokemon[pokemon.name].types.join(', ');
                         pokeTypesValue.innerText = typeStr;
                         
                         //change background image
@@ -298,10 +373,33 @@ let pokemonRepository = (function() {
                         pokeImageElement.setAttribute("id", 'pokemon_sprite')
                         divForSprite.append(pokeImageElement);
 
+                        // assign side images
+                        showEvolutionaryTreeDetails(pokemon)
+                        .then(function() {
+                            let sideImageOrder = determineSideImageOrder(pokemon, detailedPokemon[pokemon.name].forms);
+                            let leftImageUrl = detailedPokemon[sideImageOrder.leftImage] ? detailedPokemon[sideImageOrder.leftImage].imgUrls["front_default"] : null;
+                            let rightImageUrl = detailedPokemon[sideImageOrder.rightImage] ? detailedPokemon[sideImageOrder.rightImage].imgUrls["front_default"]: null;
+
+                            if (leftImageUrl != null) {
+                                leftImageElement.setAttribute("src", leftImageUrl);
+                                leftImageDiv.appendChild(leftImageElement);
+                                leftImageDiv.style.visibility = "visible"
+
+                            }
+
+                            if (rightImageUrl != null) {
+                                rightImageElement.setAttribute("src", rightImageUrl);
+                                rightImageDiv.appendChild(rightImageElement);
+                                rightImageDiv.style.visibility = "visible"
+                            }
+                        });
+
+
+
                     } else {
                         console.log("Attribute or Pokemon not found.");
                     }
-                })
+                });
         }
 
 /*
@@ -330,6 +428,4 @@ pokemonRepository.loadList().then(function() {
         pokemonRepository.addListItem(pokemon);
     });
 });
-
-pokemonRepository.getAll();
 

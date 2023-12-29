@@ -132,6 +132,20 @@ body {
     border-radius: 50%;
     background-image: url('../images/evolve.webp');
     background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    visibility: hidden;
+}
+
+.bg img {
+    width: 100%;
+    height: auto;
+    transition: all .25s ease;
+}
+
+.box:hover .bg img {
+    transform: scale(1.25);
 }
 
 .elements.bg2 {
