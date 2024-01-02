@@ -20,7 +20,7 @@ body {
 
 .container {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     width: 100vw;
     justify-content: center;
     gap: 120px;
@@ -59,8 +59,6 @@ body {
     overflow-y: auto;
 }
 
-
-
 .poke-button {
     text-align: left;
     padding: 8px;
@@ -72,8 +70,16 @@ body {
     cursor: pointer;
 }
 
+.modal {
+    display: flex;
+    flex-direction: column;
+    margin-top: -64px;
+    gap: 12px;
+    width: 300px;
+}
+
 .box {
-    display: none;
+    visibility: hidden;
 }
 /* uses class name from vanilla-tilt.js and allows element and children to move and appear in 3d */
 .box.is-visible {
@@ -303,4 +309,25 @@ body {
 
 .values {
     align-items: start;
+}
+
+.close-details {
+    align-self: end;
+    display: flex;
+    justify-content: center;
+    background-color: rgba(255,255,255,.75);
+    align-items: center;
+    border: 2px solid white;
+    width: 100px;
+    height: 50px;
+    border-radius: 25px;
+    color: rgb(10, 104, 181);
+    font-weight: bold;
+    visibility: hidden;
+    transition: all ease .1s;
+}
+
+.close-details:hover, .close-details:focus {
+    box-shadow: 4px 4px 4px rgba(0, 0, 0, .5);
+    cursor: pointer;
 }
