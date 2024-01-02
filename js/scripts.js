@@ -3,7 +3,7 @@
 let pokemonRepository = (function() {
     let myPokemon = [];
     let detailedPokemon = {};
-    let apiURL = 'https://pokeapi.co/api/v2/pokemon/?limit=151';
+    const API_URL = 'https://pokeapi.co/api/v2/pokemon/?limit=151';
 
     //
 
@@ -95,7 +95,7 @@ let pokemonRepository = (function() {
      *                    The Promise is rejected if there is an error during the fetch operation or data processing.
      */
     function loadList() {
-        return fetch(apiURL).then(function(response) {
+        return fetch(API_URL).then(function(response) {
             return response.json();
         }).then(function(json) {
             json.results.forEach(function(item) {
