@@ -132,44 +132,44 @@ let pokemonRepository = (function() {
 
 
     /**
-     * Loads detailed information for a specific Pokémon.
+     * Loads detailed information for a specific Pokémon, including its evolutionary tree.
      * 
-     * This function fetches additional details about a Pokémon from its detail URL.
-     * The details include the Pokémon's height, weight, and types. These details are added to the 
-     * Pokémon object by calling the addDetails function.
+     * This function first checks if the details are already loaded in `detailedPokemon`.
+     * If not, it fetches the details from the Pokémon's `detailsUrl` and also derives its evolutionary tree.
+     * The details and the evolutionary tree are then stored for future use.
      * 
-     * @param {Object} pokemon - An object representing a Pokémon. It must have a property 'detailsUrl' 
-     *                           with the URL to fetch the Pokémon's details.
-     * @returns {Promise} A Promise that resolves when the Pokémon's details have been loaded and processed.
-     *                    The Promise is rejected if there is an error during the fetch operation or data processing.
+     * @param {Object} pokemon - An object representing a Pokémon, must have a 'detailsUrl' property.
+     * @returns {Promise} A Promise that resolves with detailed information of the Pokémon.
      */
     function loadDetails(pokemon) {
-        // Check if details are already loaded 
         if (detailedPokemon[pokemon.name]) {
             return Promise.resolve(detailedPokemon[pokemon.name]);
         }
 
-        // Fetch details and derive evolutionary tree
+        if (!pokemon.detailsUrl) {
+            return Promise.reject(new Error('No details URL provided for the Pokémon.'));
+        }
+
         let detailsPromise = fetch(pokemon.detailsUrl).then(response => response.json());
         let evolutionaryTreePromise = deriveEvolutionaryTree(pokemon);
 
         return Promise.all([detailsPromise, evolutionaryTreePromise])
-        .then(([details, evolutionaryTree]) => {
-
-            let detailsObject = {
-                height: details.height,
-                weight: details.weight,
-                types: details.types.map(typeItem => typeItem.type.name),
-                imgUrls: details.sprites,
-                forms: evolutionaryTree
-            }
-            //store details for future
-            detailedPokemon[pokemon.name] = detailsObject;
-            return detailedPokemon[pokemon.name];
-        }).catch(function(e) {
-            console.error(e);
-        })
+            .then(([details, evolutionaryTree]) => {
+                let detailsObject = {
+                    height: details.height,
+                    weight: details.weight,
+                    types: details.types.map(typeItem => typeItem.type.name),
+                    imgUrls: details.sprites,
+                    forms: evolutionaryTree
+                };
+                detailedPokemon[pokemon.name] = detailsObject;
+                return detailsObject;
+            })
+            .catch(e => {
+                console.error(`Error loading details for ${pokemon.name}:`, e);
+            });
     }
+
 
     /**
      * Adds specific details to a Pokémon object in the repository.
@@ -280,7 +280,7 @@ let pokemonRepository = (function() {
                 // Details not loaded, fetch them
                 // If pokemon not in myPokemonArray, add them
                 if (!pokemonRepository.findPokemonByName(name)) {
-                    addPokemonToMyPokemon(name)
+                    fetchAndAddPokemon(name)
                     .then(function() {
                         let evolutionaryPokemon = pokemonRepository.findPokemonByName(name);
                         return loadDetails(evolutionaryPokemon);
