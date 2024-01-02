@@ -368,11 +368,21 @@ let pokemonRepository = (function() {
         return Promise.all(detailPromises);
     }
 
+    // declare modalElement variable
+    let modalElement = null;
+
+    function getModalElement () {
+        if (!modalElement) {
+            modalElement = document.querySelector(".box");
+        }
+        return modalElement;
+    }
+
     /** 
      * This function hides the pokemon details modal 
      */
     function hidePokemonDetailsModal() {
-        const modal = document.querySelector(".box")
+        const modal = getModalElement();
         modal.style.visibility = "hidden";
     }
 
