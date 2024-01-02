@@ -92,20 +92,22 @@ let pokemonRepository = (function() {
      *                    The Promise is rejected if there is an error during the fetch operation or data processing.
      */
     function loadList() {
-        return fetch(API_URL).then(function(response) {
-            return response.json();
-        }).then(function(json) {
-            json.results.forEach(function(item) {
-                let pokemon = {
-                    name: item.name,
-                    detailsUrl: item.url
-                };
-                add(pokemon);
+        return fetch(API_URL)
+            .then(response => response.json())
+            .then(json => {
+                json.results.forEach(item => {
+                    let pokemon = {
+                        name: item.name,
+                        detailsUrl: item.url
+                    };
+                    add(pokemon);
+                });
+            })
+            .catch(e => {
+                console.error("Error loading Pokémon list:", e);
             });
-        }).catch(function (e) {
-            console.error(e);
-        })
     }
+
 
     function addPokemonToMyPokemon(pokemonName) {
         let api = `https://pokeapi.co/api/v2/pokemon/${pokemonName}`;
