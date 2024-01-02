@@ -265,13 +265,31 @@ let pokemonRepository = (function() {
     }
 
 
-    function deriveEvolutionaryTree(pokemon){
+    /**
+     * Derives the evolutionary tree for a given Pokémon.
+     *
+     * This function first fetches the URL for the Pokémon's evolutionary tree,
+     * then retrieves the tree data from that URL, and finally parses the tree
+     * to extract the evolutionary forms of the Pokémon.
+     * 
+     * @param {Object} pokemon - The Pokémon object for which to derive the evolutionary tree.
+     * @returns {Promise<string[]>} A Promise that resolves with an array of Pokémon names in the evolutionary tree.
+     */
+    function deriveEvolutionaryTree(pokemon) {
+        if (!pokemon.name) {
+            return Promise.reject(new Error('Pokemon object does not have a name property'));
+        }
+
         return getEvolutionaryTreeUrl(pokemon)
-        .then(evolutionaryChainUrl => fetch(evolutionaryChainUrl))
-        .then(response => response.json())
-        .then(json => parseEvolutionaryTree(json))
-        .catch(error => console.error("Error in fetching evolutionary tree:", error));
+            .then(evolutionaryChainUrl => fetch(evolutionaryChainUrl))
+            .then(response => response.json())
+            .then(json => parseEvolutionaryTree(json))
+            .catch(error => {
+                console.error(`Error in fetching evolutionary tree for ${pokemon.name}:`, error);
+                throw error; // Re-throw to ensure propagation in promise chain
+            });
     }
+
 
     function determineSideImageOrder(pokemon, evolutionArray) {
 
