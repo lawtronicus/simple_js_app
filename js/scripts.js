@@ -188,49 +188,81 @@ let pokemonRepository = (function() {
     }
 
 
-/**
- * Parses an evolutionary tree JSON to extract the names of all forms of a Pokémon.
- *
- * This function takes a JSON object representing a Pokémon's evolutionary tree and 
- * recursively traverses through it. At each step, it extracts the Pokémon's name 
- * from the 'species' key and adds it to an array. The function handles the tree's 
- * hierarchical structure by recursively processing each 'evolves_to' array.
- * 
- * @param {Object} evolutionaryTreeJson - A JSON object representing the evolutionary tree of a Pokémon.
- * @returns {string[]} An array containing the names of all forms of the Pokémon in its evolutionary tree.
- */
-function parseEvolutionaryTree(evolutionaryTreeJson) {
-    let pokemonForms = [];
+    /**
+     * Parses an evolutionary tree JSON to extract the names of all forms of a Pokémon.
+     *
+     * This function takes a JSON object representing a Pokémon's evolutionary tree and 
+     * recursively traverses through it. At each step, it extracts the Pokémon's name 
+     * from the 'species' key and adds it to an array. The function handles the tree's 
+     * hierarchical structure by recursively processing each 'evolves_to' array.
+     * 
+     * @param {Object} evolutionaryTreeJson - A JSON object representing the evolutionary tree of a Pokémon.
+     * @returns {string[]} An array containing the names of all forms of the Pokémon in its evolutionary tree.
+     */
+    function parseEvolutionaryTree(evolutionaryTreeJson) {
+        let pokemonForms = [];
+
+        /**
+         * Recursively traverses an evolutionary step to collect Pokémon names.
+         * @param {Object} evolutionaryStep - A step in the evolutionary tree.
+         */
+        function traverse(evolutionaryStep) {
+            if (!evolutionaryStep) {
+                console.error('Invalid evolutionary step encountered');
+                return;
+            }
+
+            if (evolutionaryStep.species) {
+                pokemonForms.push(evolutionaryStep.species.name);
+            }
+
+            if (evolutionaryStep.evolves_to && evolutionaryStep.evolves_to.length > 0) {
+                evolutionaryStep.evolves_to.forEach(nextStep => traverse(nextStep));
+            }
+        }
+
+        if (evolutionaryTreeJson && evolutionaryTreeJson.chain) {
+            traverse(evolutionaryTreeJson.chain);
+        } else {
+            console.error('Invalid evolutionary tree JSON structure');
+        }
+
+        // Additional check for top-level traversal because the JSON the structure varies
+        traverse(evolutionaryTreeJson);
+        return pokemonForms;
+    }
 
     /**
-     * Recursively traverses an evolutionary step to collect Pokémon names.
-     * @param {Object} evolutionaryStep - A step in the evolutionary tree.
+     * Retrieves the URL of the evolutionary tree for a given Pokémon.
+     *
+     * This function fetches the species details for the specified Pokémon from the API,
+     * then extracts and returns the URL of the Pokémon's evolutionary chain.
+     * 
+     * @param {Object} pokemon - The Pokémon object for which to retrieve the evolutionary tree URL.
+     * @returns {Promise<string>} A Promise that resolves with the URL of the evolutionary tree.
      */
-    function traverse(evolutionaryStep) {
-        if (!evolutionaryStep) {
-            console.error('Invalid evolutionary step encountered');
-            return;
+    function getEvolutionaryTreeUrl(pokemon) {
+        if (!pokemon.name) {
+            return Promise.reject(new Error('Pokemon object does not have a name property'));
         }
 
-        if (evolutionaryStep.species) {
-            pokemonForms.push(evolutionaryStep.species.name);
-        }
+        const pokemonName = pokemon.name;
+        const evolutionaryTreeUrl = `https://pokeapi.co/api/v2/pokemon-species/${pokemonName}`;
 
-        if (evolutionaryStep.evolves_to && evolutionaryStep.evolves_to.length > 0) {
-            evolutionaryStep.evolves_to.forEach(nextStep => traverse(nextStep));
-        }
+        return fetch(evolutionaryTreeUrl)
+            .then(response => response.json())
+            .then(speciesDetails => {
+                const evolutionaryChainUrl = speciesDetails['evolution_chain']?.url;
+                if (!evolutionaryChainUrl) {
+                    throw new Error('Evolutionary chain URL not found in species details');
+                }
+                return evolutionaryChainUrl;
+            })
+            .catch(e => {
+                console.error(`Error fetching evolutionary tree URL for ${pokemonName}:`, e);
+                throw e; // Re-throw the error to ensure it's caught by the caller
+            });
     }
-
-    if (evolutionaryTreeJson && evolutionaryTreeJson.chain) {
-        traverse(evolutionaryTreeJson.chain);
-    } else {
-        console.error('Invalid evolutionary tree JSON structure');
-    }
-
-    // Additional check for top-level traversal because the JSON the structure varies
-    traverse(evolutionaryTreeJson);
-    return pokemonForms;
-}
 
 
     function deriveEvolutionaryTree(pokemon){
@@ -239,17 +271,6 @@ function parseEvolutionaryTree(evolutionaryTreeJson) {
         .then(response => response.json())
         .then(json => parseEvolutionaryTree(json))
         .catch(error => console.error("Error in fetching evolutionary tree:", error));
-    }
-
-    function getEvolutionaryTreeUrl(pokemon) {
-        pokemonName = pokemon.name;
-        evolutionaryTreeUrl = `https://pokeapi.co/api/v2/pokemon-species/${pokemonName}`;
-        return fetch (evolutionaryTreeUrl).then(function(response) {
-            return response.json();
-        }).then(function(speciesDetails){
-            evolutionaryChainUrl = speciesDetails['evolution_chain']['url'];
-            return evolutionaryChainUrl;
-        })
     }
 
     function determineSideImageOrder(pokemon, evolutionArray) {
