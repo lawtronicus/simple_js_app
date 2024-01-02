@@ -291,47 +291,50 @@ let pokemonRepository = (function() {
     }
 
 
+    /**
+     * Determines the order of side images based on a Pokémon's position in its evolutionary array.
+     * 
+     * This function calculates which Pokémon images should be shown on the left and right sides
+     * of the given Pokémon based on its position in the evolutionary array.
+     * 
+     * @param {Object} pokemon - The Pokémon object for which to determine the side images.
+     * @param {string[]} evolutionArray - An array of Pokémon names in their evolutionary order.
+     * @returns {Object} An object containing the names of the left and right Pokémon images.
+     */
     function determineSideImageOrder(pokemon, evolutionArray) {
-
-        let imageOrder = {
-            leftImage: "",
-            rightImage: ""
-        };
-
         if (!evolutionArray.includes(pokemon.name)) {
-            console.log(pokemon.name);
-            console.log(evolutionArray);
-            throw "The pokemon is not in the array";
+            console.log("Pokemon name:", pokemon.name);
+            console.log("Evolution Array:", evolutionArray);
+            throw new Error("The pokemon is not in the evolution array");
         }
 
-        if (evolutionArray.length >= 3) {
+        let imageOrder = {
+            leftImage: null,
+            rightImage: null
+        };
 
-            if (evolutionArray.indexOf(pokemon.name) === 0) {
-                imageOrder.leftImage = evolutionArray[1];
-                imageOrder.rightImage = evolutionArray[2];
-            } else if (evolutionArray.indexOf(pokemon.name) === 1) {
+        const position = evolutionArray.indexOf(pokemon.name);
+
+        if (evolutionArray.length >= 3) {
+            if (position === 0) {
+                imageOrder.rightImage = evolutionArray[1];
+            } else if (position === 1) {
                 imageOrder.leftImage = evolutionArray[0];
                 imageOrder.rightImage = evolutionArray[2];
             } else {
-                imageOrder.leftImage = evolutionArray[0];
-                imageOrder.rightImage = evolutionArray[1];
+                imageOrder.leftImage = evolutionArray[1];
             }
-
         } else if (evolutionArray.length === 2) {
-            if (evolutionArray.indexOf(pokemon.name) === 0) {
-                imageOrder.leftImage = null;
+            if (position === 0) {
                 imageOrder.rightImage = evolutionArray[1];
-            } else if (evolutionArray.indexOf(pokemon.name) === 1) {
+            } else {
                 imageOrder.leftImage = evolutionArray[0];
-                imageOrder.rightImage = null;
             }
-        } else {
-            imageOrder.leftImage = null;
-            imageOrder.rightImage = null;
         }
 
         return imageOrder;
     };
+
 
 
     function showEvolutionaryTreeDetails(pokemon) {
