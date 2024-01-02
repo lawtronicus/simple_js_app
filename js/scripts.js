@@ -188,28 +188,50 @@ let pokemonRepository = (function() {
     }
 
 
-    function parseEvolutionaryTree(evolutionaryTreeJson) {
-        let pokemonForms = [];
+/**
+ * Parses an evolutionary tree JSON to extract the names of all forms of a Pokémon.
+ *
+ * This function takes a JSON object representing a Pokémon's evolutionary tree and 
+ * recursively traverses through it. At each step, it extracts the Pokémon's name 
+ * from the 'species' key and adds it to an array. The function handles the tree's 
+ * hierarchical structure by recursively processing each 'evolves_to' array.
+ * 
+ * @param {Object} evolutionaryTreeJson - A JSON object representing the evolutionary tree of a Pokémon.
+ * @returns {string[]} An array containing the names of all forms of the Pokémon in its evolutionary tree.
+ */
+function parseEvolutionaryTree(evolutionaryTreeJson) {
+    let pokemonForms = [];
 
-        function traverse(evolutionaryStep) {
-            if (evolutionaryStep.species) {
-                pokemonForms.push(evolutionaryStep.species.name); // add species name
-            }
-
-            // Check if 'evolves_to' is not empty and call the function recursively if not
-            if (evolutionaryStep.evolves_to && evolutionaryStep.evolves_to.length > 0) {
-                evolutionaryStep.evolves_to.forEach(nextStep => traverse(nextStep));
-            }
+    /**
+     * Recursively traverses an evolutionary step to collect Pokémon names.
+     * @param {Object} evolutionaryStep - A step in the evolutionary tree.
+     */
+    function traverse(evolutionaryStep) {
+        if (!evolutionaryStep) {
+            console.error('Invalid evolutionary step encountered');
+            return;
         }
-        
-        // start traversal from top level, which has a slightly different structure
-        if (evolutionaryTreeJson && evolutionaryTreeJson.chain) {
-            traverse(evolutionaryTreeJson.chain);
+
+        if (evolutionaryStep.species) {
+            pokemonForms.push(evolutionaryStep.species.name);
         }
 
-        traverse(evolutionaryTreeJson);
-        return pokemonForms;
+        if (evolutionaryStep.evolves_to && evolutionaryStep.evolves_to.length > 0) {
+            evolutionaryStep.evolves_to.forEach(nextStep => traverse(nextStep));
+        }
     }
+
+    if (evolutionaryTreeJson && evolutionaryTreeJson.chain) {
+        traverse(evolutionaryTreeJson.chain);
+    } else {
+        console.error('Invalid evolutionary tree JSON structure');
+    }
+
+    // Additional check for top-level traversal because the JSON the structure varies
+    traverse(evolutionaryTreeJson);
+    return pokemonForms;
+}
+
 
     function deriveEvolutionaryTree(pokemon){
         return getEvolutionaryTreeUrl(pokemon)
