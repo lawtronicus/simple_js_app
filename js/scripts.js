@@ -385,7 +385,8 @@ let pokemonRepository = (function() {
 
                     // change sprite image
                     pokeImageElement.setAttribute("src", pokeImage);
-                    pokeImageElement.setAttribute("id", 'pokemon_sprite')
+                    pokeImageElement.setAttribute("alt", "main pokemon image");
+                    pokeImageElement.setAttribute("id", 'pokemon_sprite');
                     divForSprite.append(pokeImageElement);
 
                     // assign side images
@@ -397,6 +398,7 @@ let pokemonRepository = (function() {
 
                         if (leftImageUrl != null) {
                             leftImageElement.setAttribute("src", leftImageUrl);
+                            leftImageElement.setAttribute("alt", "Previous pokemon form");
                             leftImageDiv.appendChild(leftImageElement);
                             leftImageDiv.style.visibility = "visible"
 
@@ -404,6 +406,7 @@ let pokemonRepository = (function() {
 
                         if (rightImageUrl != null) {
                             rightImageElement.setAttribute("src", rightImageUrl);
+                            rightImageElement.setAttribute("alt", "Next pokemon evolutionary form");
                             rightImageDiv.appendChild(rightImageElement);
                             rightImageDiv.style.visibility = "visible"
                         }

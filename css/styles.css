@@ -5,6 +5,7 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
+    --background-blue: rgb(0, 115, 209);
 }
 
 /*Set body to display flex for easier positioning, make sure height fills the viewport*/
@@ -46,7 +47,7 @@ body {
 
 #pokedex > h2 {
     margin-left: 4px;
-    color: rgb(10, 104, 181);
+    color: var(--background-blue);
 }
 
 /* handle styles for pokemon-list ul */
@@ -64,7 +65,7 @@ body {
     padding: 8px;
     border-radius: 8px;
     font-size: 18px;
-    background-color: rgb(15, 147, 255);
+    background-color: var(--background-blue);
     color: white;
     width: 275px;
     cursor: pointer;
@@ -257,11 +258,10 @@ body {
     transition: 0.5s;
     transition-delay: 0.1s;
     color: white;
-    background-color: rgb(15, 147, 255);
+    background-color: rgb(10, 104, 181);
     z-index: 2;
     display: flex;
     align-items: center;
-
 }
 
 /*
@@ -329,7 +329,7 @@ body {
     width: 100px;
     height: 50px;
     border-radius: 25px;
-    color: rgb(10, 104, 181);
+    color: var(--background-blue);
     font-weight: bold;
     visibility: hidden;
     transition: all ease .1s;
