@@ -334,9 +334,7 @@ body {
     transition: all ease .1s;
 }
 
-/*
 .close-details:hover, .close-details:focus {
     box-shadow: 4px 4px 4px rgba(0, 0, 0, .5);
     cursor: pointer;
 }
-*/
