@@ -108,29 +108,6 @@ let pokemonRepository = (function() {
             });
     }
 
-
-    /**
-     * Fetches a specific Pokémon by name from the API, adds it to the repository, and then to the DOM list.
-     * @param {string} pokemonName - The name of the Pokémon to fetch and add.
-     */
-    function fetchAndAddPokemon(pokemonName) {
-        let api = `https://pokeapi.co/api/v2/pokemon/${pokemonName}`;
-        return fetch(api)
-            .then(response => response.json())
-            .then(pokemon => {
-                let newPokemon = {
-                    name: pokemon.name,
-                    detailsUrl: api
-                };
-                add(newPokemon);
-                pokemonRepository.addListItem(newPokemon);
-            })
-            .catch(e => {
-                console.error(`Error fetching details for ${pokemonName}:`, e);
-            });
-    }
-
-
     /**
      * Loads detailed information for a specific Pokémon, including its evolutionary tree.
      * 
@@ -335,30 +312,60 @@ let pokemonRepository = (function() {
         return imageOrder;
     };
 
+    /**
+     * Fetches a specific Pokémon by name from the API, adds it to the repository, and then to the DOM list.
+     * @param {string} pokemonName - The name of the Pokémon to fetch and add.
+     */
+        function fetchAndAddPokemon(pokemonName) {
+            let api = `https://pokeapi.co/api/v2/pokemon/${pokemonName}`;
+            return fetch(api)
+                .then(response => response.json())
+                .then(pokemon => {
+                    let newPokemon = {
+                        name: pokemon.name,
+                        detailsUrl: api
+                    };
+                    add(newPokemon); // Add to the basic array
+                    pokemonRepository.addListItem(newPokemon); // Add to the fragment
+
+                    //Append all items in the fragment to the actual DOM
+                    appendAllItems();
+
+                    return newPokemon; // Return new pokemon for further processing
+                })
+                .catch(e => {
+                    console.error(`Error fetching details for ${pokemonName}:`, e);
+                });
+        }
 
 
+    /**
+     * Ensures that detailed information for all Pokémon in a given Pokémon's evolutionary tree is available.
+     * Fetches details for any Pokémon in the tree if they are not already loaded.
+     * 
+     * @param {Object} pokemon - A Pokémon object whose evolutionary tree details are to be ensured.
+     * @returns {Promise<Object[]>} A promise that resolves with an array of detailed Pokémon objects.
+     */
     function showEvolutionaryTreeDetails(pokemon) {
         let evolutionaryTree = detailedPokemon[pokemon.name].forms;
+
         let detailPromises = evolutionaryTree.map(name => {
-            if (!detailedPokemon[name]) {
-                // Details not loaded, fetch them
-                // If pokemon not in myPokemonArray, add them
-                if (!pokemonRepository.findPokemonByName(name)) {
-                    fetchAndAddPokemon(name)
-                    .then(function() {
-                        let evolutionaryPokemon = pokemonRepository.findPokemonByName(name);
-                        return loadDetails(evolutionaryPokemon);
-                    });
-                } else {
-                    let evolutionaryPokemon = pokemonRepository.findPokemonByName(name);
-                    return loadDetails(evolutionaryPokemon);
-                }
-            } else {
+            // Check if the detailed information is already available
+            if (detailedPokemon[name]) {
                 return Promise.resolve(detailedPokemon[name]);
             }
+
+            // Check if the Pokémon is in the basic array but lacks detailed info
+            let basicPokemon = pokemonRepository.findPokemonByName(name);
+            if (basicPokemon) {
+                return loadDetails(basicPokemon);
+            }
+
+            // If the Pokémon is not in either array, fetch and add it
+            return fetchAndAddPokemon(name).then(newPokemon => loadDetails(newPokemon));
         });
 
-        return Promise.all(detailPromises)
+        return Promise.all(detailPromises);
     }
 
     /** 
