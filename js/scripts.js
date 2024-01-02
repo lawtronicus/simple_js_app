@@ -109,21 +109,27 @@ let pokemonRepository = (function() {
     }
 
 
-    function addPokemonToMyPokemon(pokemonName) {
+    /**
+     * Fetches a specific Pokémon by name from the API, adds it to the repository, and then to the DOM list.
+     * @param {string} pokemonName - The name of the Pokémon to fetch and add.
+     */
+    function fetchAndAddPokemon(pokemonName) {
         let api = `https://pokeapi.co/api/v2/pokemon/${pokemonName}`;
-        return fetch(api).then(function(response) {
-            return response.json();
-        }).then(function(pokemon) {
+        return fetch(api)
+            .then(response => response.json())
+            .then(pokemon => {
                 let newPokemon = {
                     name: pokemon.name,
                     detailsUrl: api
                 };
                 add(newPokemon);
                 pokemonRepository.addListItem(newPokemon);
-        }).catch(function (e) {
-            console.error(e);
-        });
+            })
+            .catch(e => {
+                console.error(`Error fetching details for ${pokemonName}:`, e);
+            });
     }
+
 
     /**
      * Loads detailed information for a specific Pokémon.
