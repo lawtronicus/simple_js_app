@@ -45,25 +45,41 @@ let pokemonRepository = (function() {
         return myPokemon.find(pokemon => pokemon.name.toLowerCase() === pokemonName.toLowerCase());
     }
 
+    //Create fragment for more efficiently adding pokemon to pokedex
+    let fragment = document.createDocumentFragment();
 
     /**
-     * adds a Pokemon to the pokemon list
-     * @param {Object} pokemon - a pokemon object, the name value of which will be added to the list
+     * Adds a Pokémon item to a fragment.
+     * The function creates a list item and a button for each Pokémon.
+     * This button, when clicked, triggers the display of the Pokémon's details.
+     * The created list item is appended to a document fragment for efficient DOM manipulation.
+     * Actual appending to the DOM is done by `appendAllItems` function.
+     * @param {Object} pokemon - A Pokémon object to add to the list.
      */
     function addListItem(pokemon) {
-        const pokemonList = document.querySelector('#pokemon-list');
         let listItem = document.createElement('li');
         let button = document.createElement('button');
-        let pokemonName = document.createTextNode(pokemon.name)
 
-        button.classList.add('poke-button');         
-        button.appendChild(pokemonName);
+        button.classList.add('poke-button');
+        button.textContent = pokemon.name; // Directly setting the text content
+        button.setAttribute('aria-label', `View details for ${pokemon.name}`); // Accessibility improvement
         button.addEventListener('click', function () {
             showDetails(pokemon);
         });
+
         listItem.appendChild(button);
-        pokemonList.appendChild(listItem);
-    };
+        fragment.appendChild(listItem);
+    }
+
+    /**
+     * Appends all items from the fragment to the main Pokémon list in the DOM.
+     * This function is called after all Pokémon items have been added to the fragment,
+     * allowing for efficient batched updates to the DOM.
+     */
+    function appendAllItems() {
+        const pokemonList = document.querySelector('#pokemon-list');
+        pokemonList.appendChild(fragment);
+    }
 
     /**
      * Loads a list of Pokémon from a specified API.
@@ -104,7 +120,7 @@ let pokemonRepository = (function() {
                 pokemonRepository.addListItem(newPokemon);
         }).catch(function (e) {
             console.error(e);
-        })
+        });
     }
 
     /**
@@ -440,12 +456,14 @@ let pokemonRepository = (function() {
         showDetails: showDetails,
         loadList: loadList,
         loadDetails: loadDetails,
+        appendAllItems: appendAllItems
     };
 })();
 
 pokemonRepository.loadList().then(function() {
     // data loaded
     pokemonRepository.getAll().forEach(function(pokemon){
-        pokemonRepository.addListItem(pokemon);
+        pokemonRepository.addListItem(pokemon)
     });
+    pokemonRepository.appendAllItems();
 });
