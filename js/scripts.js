@@ -5,53 +5,33 @@ let pokemonRepository = (function() {
     let detailedPokemon = {};
     const API_URL = 'https://pokeapi.co/api/v2/pokemon/?limit=151';
 
-    //
-
-
-        /**
-         * Validates if the input is a correct Pokémon object.
-         * @param {Object} pokemon - The object to validate.
-         * @return {boolean} True if the object is a valid Pokémon, false otherwise. Should be an object and have at least one of name, height, weight, category, types, or isBig, and nothing else
-         */
-/*This function does not match well with the pokemon API- WILL MODIFY LATER 
-        function isValidPokemon(pokemon) {
-            const validKeys = ['name', 'height', 'weight', 'category', 'types', 'isBig', 'detailsUrl'];
-            const objKeys = Object.keys(pokemon);
-
-            return (typeof pokemon === 'object' || pokemon != null || !(Array.isArray(pokemon))) && 
-                    objKeys.every(key => validKeys.includes(key)) &&
-                    validKeys.some(key => objKeys.includes(key));
-        }
-/*
-
     /**
-     * Adds a new Pokémon to the repository if it is valid.
-     * @param {Object} pokemon - The Pokémon object to add. 
+     * Adds a new Pokémon to the repository if it's not already present.
+     * @param {Object} pokemon - The Pokémon object to add.
      */
-
     function add(pokemon) {
-    /* removing validation check for now as it does not match with the api well
-        if (!isValidPokemon(pokemon)) {
-            console.error('Invalid Pokemon: incorrect properties.');
-            return;
+        // Check if the pokemon is already in the array
+        const exists = myPokemon.some(p => p.name === pokemon.name);
+        if (!exists) {
+            myPokemon = [...myPokemon, pokemon];
+        } else {
+            console.warn(`Pokémon with the name '${pokemon.name}' already exists.`);
         }
-    */
-        myPokemon.push(pokemon);
     }
 
     /**
      * Retrieves all Pokémon from the repository.
+     * Returns a copy of the Pokémon array to maintain immutability.
      * @return {Object[]} An array of all Pokémon objects in the repository.
      */
     function getAll() {
-        return myPokemon;
+        return [...myPokemon];
     }
 
+
     /**
-     * Finds and returns the first Pokémon object from the repository that matches the provided name.
-     *
-     * This function searches through the list of all Pokémon in the repository and returns the first one
-     * whose name matches the given `pokemonName`. The comparison is case-insensitive. If no matching Pokémon
+     * Finds and returns the Pokémon object from the repository that matches the provided name.
+     * The comparison is case-insensitive. If no matching Pokémon
      * is found, or if the provided name is not a string, it logs an error and returns undefined.
      * 
      * @param {string} pokemonName - The name of the Pokémon to find.
@@ -60,10 +40,11 @@ let pokemonRepository = (function() {
     function findPokemonByName(pokemonName) {
         if (typeof pokemonName !== 'string') {
             console.error('pokemonName must be a string');
-            return;
+            return undefined;
         }
-        return pokemonRepository.getAll().filter(pokemon => pokemon.name.toLowerCase() === pokemonName.toLowerCase())[0];
+        return myPokemon.find(pokemon => pokemon.name.toLowerCase() === pokemonName.toLowerCase());
     }
+
 
     /**
      * adds a Pokemon to the pokemon list
