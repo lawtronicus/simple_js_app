@@ -172,21 +172,21 @@ let pokemonRepository = (function() {
 
 
     /**
-     * Adds specific details to a Pokémon object in the repository.
+     * Adds or updates details of a Pokémon object.
      *
-     * This function finds a Pokémon by name using the `findPokemonByName` method of the
-     * pokemonRepository. It then adds or updates a specific detail (identified by 'key') 
-     * to the found Pokémon object with the provided 'value'.
+     * This function takes a Pokémon object and a details object. It iterates over the keys
+     * of the details object and adds or updates these keys in the Pokémon object with the
+     * corresponding values from the details object.
      * 
-     * @param {string} pokemonName - The name of the Pokémon to which the details will be added.
-     * @param {string} key - The property key in the Pokémon object that will be added or updated.
-     * @param {any} value - The value to be assigned to the specified key in the Pokémon object.
+     * @param {Object} pokemon - The Pokémon object to which the details will be added or updated.
+     * @param {Object} detailsObject - An object containing key-value pairs to be added or updated in the Pokémon object.
      */
     function addDetails(pokemon, detailsObject) {
         Object.keys(detailsObject).forEach(function(key) {
             pokemon[key] = detailsObject[key];
-        })
+        });
     }
+
 
     function parseEvolutionaryTree(evolutionaryTreeJson) {
         let pokemonForms = [];
