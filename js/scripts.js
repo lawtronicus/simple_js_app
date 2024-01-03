@@ -387,6 +387,90 @@ let pokemonRepository = (function() {
     }
 
     /**
+     * This function reveals the pokemon details in the modal UI
+     * @param {*} pokemon - a pokemon object
+     */
+    function revealPokemonDetails(pokemon) {
+        // Get document elements to be updated
+        const pokeName = document.querySelector('.name > h4');
+        const pokeHeightValue = document.querySelector('.values > .poke-height');
+        const pokeWeightValue = document.querySelector('.values > .poke-weight');
+        const pokeTypesValue = document.querySelector('.values > .poke-types');
+        const cardBackgroundDiv = document.querySelector('.pokemon-card');
+        const divForSprite = document.querySelector('.imgBx');
+        const leftImageDiv = document.querySelector('.bg1')
+        const rightImageDiv = document.querySelector('.bg2');
+
+        // create img element for sprite
+        const pokeImageElement = document.createElement("img");
+
+        // create img element for left image
+        const leftImageElement = document.createElement("img");
+
+        //create img element for right image
+        const rightImageElement = document.createElement("img")
+
+        // get link for background image
+        const cardBackgroundImage = detailedPokemon[pokemon.name].imgUrls.other['official-artwork']['front_default'];
+
+        // get link for sprite image
+        let pokeImage;
+
+        if (detailedPokemon[pokemon.name].imgUrls.other['dream_world']['front_default']) {
+            pokeImage = detailedPokemon[pokemon.name].imgUrls.other['dream_world']['front_default']
+        } else {
+            pokeImage = detailedPokemon[pokemon.name].imgUrls.other['home']['front_default']
+        }
+        if (pokeName && pokeHeightValue && pokeWeightValue && pokeTypesValue && detailedPokemon[pokemon.name]) {
+            pokeName.innerText = `Name: ${pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)}`;
+            pokeHeightValue.innerText = `${detailedPokemon[pokemon.name].height} decimeters`;
+            pokeWeightValue.innerText = `${detailedPokemon[pokemon.name].weight} hectograms`;
+
+            // Transform tye types array to a string of type names
+            let typeStr = detailedPokemon[pokemon.name].types.join(', ');
+            pokeTypesValue.innerText = typeStr;
+            
+            //change background image
+            cardBackgroundDiv.style.backgroundImage = `url(${cardBackgroundImage})`;
+
+            // change sprite image
+            pokeImageElement.setAttribute("src", pokeImage);
+            pokeImageElement.setAttribute("alt", "main pokemon image");
+            pokeImageElement.setAttribute("id", 'pokemon_sprite');
+            divForSprite.append(pokeImageElement);
+
+            // assign side images
+            showEvolutionaryTreeDetails(pokemon)
+            .then(function() {
+                let sideImageOrder = determineSideImageOrder(pokemon, detailedPokemon[pokemon.name].forms);
+                let leftImageUrl = detailedPokemon[sideImageOrder.leftImage] ? detailedPokemon[sideImageOrder.leftImage].imgUrls["front_default"] : null;
+                let rightImageUrl = detailedPokemon[sideImageOrder.rightImage] ? detailedPokemon[sideImageOrder.rightImage].imgUrls["front_default"]: null;
+
+                if (leftImageUrl != null) {
+                    leftImageDiv.style.visibility = 'visible';
+                    leftImageElement.setAttribute("src", leftImageUrl);
+                    leftImageElement.setAttribute("alt", "Previous pokemon form");
+                    leftImageDiv.appendChild(leftImageElement);
+                } else {
+                    leftImageDiv.style.visibility = 'hidden';
+                }
+
+                if (rightImageUrl != null) {
+                    rightImageDiv.style.visibility = 'visible';
+                    rightImageElement.setAttribute("src", rightImageUrl);
+                    rightImageElement.setAttribute("alt", "Next pokemon evolutionary form");
+                    rightImageDiv.appendChild(rightImageElement);
+                } else {
+                    rightImageDiv.style.visibility = 'hidden';
+                }
+            });
+
+        } else {
+            console.log("Attribute or Pokemon not found.");
+        }
+    }
+
+    /**
      * logs pokemon name to the console
      * @param {*} pokemon - a pokemon object
      */
@@ -406,79 +490,7 @@ let pokemonRepository = (function() {
         closeButton.focus();
 
         loadDetails(pokemon)
-            .then((detailsObject) => {
-                // Get document elements to be updated
-                const pokeName = document.querySelector('.name > h4');
-                const pokeHeightValue = document.querySelector('.values > .poke-height');
-                const pokeWeightValue = document.querySelector('.values > .poke-weight');
-                const pokeTypesValue = document.querySelector('.values > .poke-types');
-                const cardBackgroundDiv = document.querySelector('.pokemon-card');
-                const divForSprite = document.querySelector('.imgBx');
-                const leftImageDiv = document.querySelector('.bg1')
-                const rightImageDiv = document.querySelector('.bg2');
-
-                // create img element for sprite
-                const pokeImageElement = document.createElement("img");
-
-                // create img element for left image
-                const leftImageElement = document.createElement("img");
-
-                //create img element for right image
-                const rightImageElement = document.createElement("img")
-
-                // get link for background image
-                const cardBackgroundImage = detailedPokemon[pokemon.name].imgUrls.other['official-artwork']['front_default'];
-
-                // get link for sprite image
-                let pokeImage;
-
-                if (detailedPokemon[pokemon.name].imgUrls.other['dream_world']['front_default']) {
-                    pokeImage = detailedPokemon[pokemon.name].imgUrls.other['dream_world']['front_default']
-                } else {
-                    pokeImage = detailedPokemon[pokemon.name].imgUrls.other['home']['front_default']
-                }
-                if (pokeName && pokeHeightValue && pokeWeightValue && pokeTypesValue && detailedPokemon[pokemon.name]) {
-                    pokeName.innerText = `Name: ${pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)}`;
-                    pokeHeightValue.innerText = `${detailedPokemon[pokemon.name].height} decimeters`;
-                    pokeWeightValue.innerText = `${detailedPokemon[pokemon.name].weight} hectograms`;
-
-                    // Transform tye types array to a string of type names
-                    let typeStr = detailedPokemon[pokemon.name].types.join(', ');
-                    pokeTypesValue.innerText = typeStr;
-                    
-                    //change background image
-                    cardBackgroundDiv.style.backgroundImage = `url(${cardBackgroundImage})`;
-
-                    // change sprite image
-                    pokeImageElement.setAttribute("src", pokeImage);
-                    pokeImageElement.setAttribute("alt", "main pokemon image");
-                    pokeImageElement.setAttribute("id", 'pokemon_sprite');
-                    divForSprite.append(pokeImageElement);
-
-                    // assign side images
-                    showEvolutionaryTreeDetails(pokemon)
-                    .then(function() {
-                        let sideImageOrder = determineSideImageOrder(pokemon, detailedPokemon[pokemon.name].forms);
-                        let leftImageUrl = detailedPokemon[sideImageOrder.leftImage] ? detailedPokemon[sideImageOrder.leftImage].imgUrls["front_default"] : null;
-                        let rightImageUrl = detailedPokemon[sideImageOrder.rightImage] ? detailedPokemon[sideImageOrder.rightImage].imgUrls["front_default"]: null;
-
-                        if (leftImageUrl != null) {
-                            leftImageElement.setAttribute("src", leftImageUrl);
-                            leftImageElement.setAttribute("alt", "Previous pokemon form");
-                            leftImageDiv.appendChild(leftImageElement);
-                        }
-
-                        if (rightImageUrl != null) {
-                            rightImageElement.setAttribute("src", rightImageUrl);
-                            rightImageElement.setAttribute("alt", "Next pokemon evolutionary form");
-                            rightImageDiv.appendChild(rightImageElement);
-                        }
-                    });
-
-                } else {
-                    console.log("Attribute or Pokemon not found.");
-                }
-            });
+            .then(() => revealPokemonDetails(pokemon));
     }
 
     function clearPokemonDetailsUI (){
@@ -514,6 +526,7 @@ let pokemonRepository = (function() {
     }
 
     let modal = document.querySelector('.box');
+    let modalChildren = document.querySelectorAll('.box > *');
     //get close button
     closeButton = document.getElementById('close-button');
     //hide model if close button is clicked
@@ -521,6 +534,7 @@ let pokemonRepository = (function() {
         clearPokemonDetailsUI();
         modal.style.visibility = "hidden";
         closeButton.style.visibility = "hidden";
+        modalChildren.forEach((child) => child.style.visibility = "");
     });
 
     window.addEventListener('keydown', (e) => {
