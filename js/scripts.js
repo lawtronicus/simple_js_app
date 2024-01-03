@@ -542,6 +542,7 @@ let pokemonRepository = (function() {
             clearPokemonDetailsUI();
             modal.style.visibility = "hidden";
             closeButton.style.visibility = "hidden";
+            modalChildren.forEach((child) => child.style.visibility = "");
         }
     })
 /*
