@@ -378,14 +378,6 @@ let pokemonRepository = (function() {
         return modalElement;
     }
 
-    /** 
-     * This function hides the pokemon details modal with the class .box
-     */
-    function hidePokemonDetailsModal() {
-        const modal = getModalElement();
-        modal.style.visibility = "hidden";
-    }
-
     /**
      * This function reveals the pokemon details in the modal UI
      * @param {*} pokemon - a pokemon object
@@ -519,7 +511,7 @@ let pokemonRepository = (function() {
         sprite.remove();
        }
         // remove side images if they exist
-        if (sideImages != []) {
+        if (sideImages.length > 0) {
             sideImages.forEach(function(item) {
                 item.remove();
             })
