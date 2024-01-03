@@ -425,7 +425,6 @@ let pokemonRepository = (function() {
             pokeName.innerText = `Name: ${pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)}`;
             pokeHeightValue.innerText = `${detailedPokemon[pokemon.name].height} decimeters`;
             pokeWeightValue.innerText = `${detailedPokemon[pokemon.name].weight} hectograms`;
-
             // Transform tye types array to a string of type names
             let typeStr = detailedPokemon[pokemon.name].types.join(', ');
             pokeTypesValue.innerText = typeStr;
@@ -493,6 +492,9 @@ let pokemonRepository = (function() {
             .then(() => revealPokemonDetails(pokemon));
     }
 
+    /**
+     * clears elements from the pokemonDetails modal UI
+     */
     function clearPokemonDetailsUI (){
         // Get document elements to be cleared
         let pokeName = document.querySelector('.name > h4');
@@ -507,7 +509,7 @@ let pokemonRepository = (function() {
         pokeName.innerText = '';
         pokeHeightValue.innerText = '';
         pokeWeightValue.innerText = '';
-        pokeTypesValue = '';
+        pokeTypesValue.innerText = '';
 
         // clear background image
         cardBackgroundDiv.style.backgroundImage = '';
@@ -525,24 +527,32 @@ let pokemonRepository = (function() {
         
     }
 
-    let modal = document.querySelector('.box');
-    let modalChildren = document.querySelectorAll('.box > *');
+    /**
+     * Function to hide the pokemonDetailsModal
+     */
+    function hideModal() {
+        let modal = document.querySelector('.box');
+        let modalChildren = document.querySelectorAll('.box > *');
+        //get close button
+        closeButton = document.getElementById('close-button');
+        //hide model if close button is clicked
+        modalChildren.forEach((child) => child.style.visibility = "");
+        modal.style.visibility = "hidden";
+        closeButton.style.visibility = "hidden";
+    }
+
     //get close button
     closeButton = document.getElementById('close-button');
     //hide model if close button is clicked
     closeButton.addEventListener('click', () => {
         clearPokemonDetailsUI();
-        modal.style.visibility = "hidden";
-        closeButton.style.visibility = "hidden";
-        modalChildren.forEach((child) => child.style.visibility = "");
+        hideModal();
     });
 
     window.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             clearPokemonDetailsUI();
-            modal.style.visibility = "hidden";
-            closeButton.style.visibility = "hidden";
-            modalChildren.forEach((child) => child.style.visibility = "");
+            hideModal();
         }
     })
 /*
