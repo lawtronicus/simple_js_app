@@ -143,7 +143,6 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    visibility: hidden;
     box-shadow: 4px 4px 4px rgba(0,0,0,.5);
 }
 
@@ -319,7 +318,7 @@ body {
     align-items: start;
 }
 
-.close-details {
+.close-details-button {
     align-self: end;
     display: flex;
     justify-content: center;
@@ -335,7 +334,7 @@ body {
     transition: all ease .1s;
 }
 
-.close-details:hover, .close-details:focus {
+.close-details-button:hover, .close-details:focus {
     box-shadow: 4px 4px 4px rgba(0, 0, 0, .5);
     cursor: pointer;
 }

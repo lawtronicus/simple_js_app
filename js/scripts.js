@@ -280,8 +280,6 @@ let pokemonRepository = (function() {
      */
     function determineSideImageOrder(pokemon, evolutionArray) {
         if (!evolutionArray.includes(pokemon.name)) {
-            console.log("Pokemon name:", pokemon.name);
-            console.log("Evolution Array:", evolutionArray);
             throw new Error("The pokemon is not in the evolution array");
         }
 
@@ -294,12 +292,14 @@ let pokemonRepository = (function() {
 
         if (evolutionArray.length >= 3) {
             if (position === 0) {
-                imageOrder.rightImage = evolutionArray[1];
+                imageOrder.leftImage = evolutionArray[1];
+                imageOrder.rightImage = evolutionArray[2];
             } else if (position === 1) {
                 imageOrder.leftImage = evolutionArray[0];
                 imageOrder.rightImage = evolutionArray[2];
             } else {
-                imageOrder.leftImage = evolutionArray[1];
+                imageOrder.leftImage = evolutionArray[0];
+                imageOrder.rightImage = evolutionArray[1];
             }
         } else if (evolutionArray.length === 2) {
             if (position === 0) {
@@ -379,7 +379,7 @@ let pokemonRepository = (function() {
     }
 
     /** 
-     * This function hides the pokemon details modal 
+     * This function hides the pokemon details modal with the class .box
      */
     function hidePokemonDetailsModal() {
         const modal = getModalElement();
@@ -391,14 +391,15 @@ let pokemonRepository = (function() {
      * @param {*} pokemon - a pokemon object
      */
     function showDetails(pokemon) {
-    //    let promise1 = loadDetails(pokemon);
-    //    let promise2 = deriveEvolutionaryTree(pokemon);
-        let hideModal;
+
+        // clear existing UI
+        clearPokemonDetailsUI();
+
         const  modal = document.querySelector(".box")
         modal.style.visibility = "visible";
 
-        const closeDetails = document.querySelector(".close-details");
-        closeDetails.style.visibility = "visible";
+        const closeDetailsButton = document.querySelector(".close-details-button");
+        closeDetailsButton.style.visibility = "visible";
 
         //focus on close button to make for easier closing
         closeButton = document.getElementById('close-button');
@@ -415,27 +416,6 @@ let pokemonRepository = (function() {
                 const divForSprite = document.querySelector('.imgBx');
                 const leftImageDiv = document.querySelector('.bg1')
                 const rightImageDiv = document.querySelector('.bg2');
-                
-                let sprite = document.getElementById('pokemon_sprite');
-
-                let sideImages = document.querySelectorAll('.bg > img')
-                console.log(sideImages);
-
-                // remove existing sprite image if it exists
-                if (sprite) {
-                    sprite.remove();
-                }
-
-                //hide side image divs
-                leftImageDiv.style.visibility = "hidden";
-                rightImageDiv.style.visibility = "hidden";
-                //remove side images if they exist;
-                if (sideImages != []) {
-                    sideImages.forEach(function(item) {
-                        item.remove();
-                    })
-                }
-
 
                 // create img element for sprite
                 const pokeImageElement = document.createElement("img");
@@ -486,19 +466,14 @@ let pokemonRepository = (function() {
                             leftImageElement.setAttribute("src", leftImageUrl);
                             leftImageElement.setAttribute("alt", "Previous pokemon form");
                             leftImageDiv.appendChild(leftImageElement);
-                            leftImageDiv.style.visibility = "visible"
-
                         }
 
                         if (rightImageUrl != null) {
                             rightImageElement.setAttribute("src", rightImageUrl);
                             rightImageElement.setAttribute("alt", "Next pokemon evolutionary form");
                             rightImageDiv.appendChild(rightImageElement);
-                            rightImageDiv.style.visibility = "visible"
                         }
                     });
-
-
 
                 } else {
                     console.log("Attribute or Pokemon not found.");
@@ -506,25 +481,52 @@ let pokemonRepository = (function() {
             });
     }
 
+    function clearPokemonDetailsUI (){
+        // Get document elements to be cleared
+        let pokeName = document.querySelector('.name > h4');
+        let pokeHeightValue = document.querySelector('.values > .poke-height');
+        let pokeWeightValue = document.querySelector('.values > .poke-weight');
+        let pokeTypesValue = document.querySelector('.values > .poke-types');
+        let cardBackgroundDiv = document.querySelector('.pokemon-card');
+        let sprite = document.getElementById('pokemon_sprite');
+        let sideImages = document.querySelectorAll('.bg > img')
+
+        // clear text
+        pokeName.innerText = '';
+        pokeHeightValue.innerText = '';
+        pokeWeightValue.innerText = '';
+        pokeTypesValue = '';
+
+        // clear background image
+        cardBackgroundDiv.style.backgroundImage = '';
+
+       // clear sprite if it exists
+       if (sprite) {
+        sprite.remove();
+       }
+        // remove side images if they exist
+        if (sideImages != []) {
+            sideImages.forEach(function(item) {
+                item.remove();
+            })
+        }
+        
+    }
+
     let modal = document.querySelector('.box');
-    let modalChildren = document.querySelectorAll('.box > *');
-    let leftImageDiv = document.querySelector('.bg1')
-    let rightImageDiv = document.querySelector('.bg2');
     //get close button
     closeButton = document.getElementById('close-button');
     //hide model if close button is clicked
     closeButton.addEventListener('click', () => {
+        clearPokemonDetailsUI();
         modal.style.visibility = "hidden";
-        leftImageDiv.style.visibility = "hidden";
-        rightImageDiv.style.visibility = "hidden";
         closeButton.style.visibility = "hidden";
     });
 
     window.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
+            clearPokemonDetailsUI();
             modal.style.visibility = "hidden";
-            leftImageDiv.style.visibility = "hidden";
-            rightImageDiv.style.visibility = "hidden";
             closeButton.style.visibility = "hidden";
         }
     })
