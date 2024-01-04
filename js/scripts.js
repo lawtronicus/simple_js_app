@@ -158,12 +158,13 @@ let pokemonRepository = (function() {
      * @param {Object} pokemon - The Pokémon object to which the details will be added or updated.
      * @param {Object} detailsObject - An object containing key-value pairs to be added or updated in the Pokémon object.
      */
+    /*
     function addDetails(pokemon, detailsObject) {
         Object.keys(detailsObject).forEach(function(key) {
             pokemon[key] = detailsObject[key];
         });
     }
-
+    */
 
     /**
      * Parses an evolutionary tree JSON to extract the names of all forms of a Pokémon.
@@ -310,7 +311,7 @@ let pokemonRepository = (function() {
         }
 
         return imageOrder;
-    };
+    }
 
     /**
      * Fetches a specific Pokémon by name from the API, adds it to the repository, and then to the DOM list.
@@ -366,16 +367,6 @@ let pokemonRepository = (function() {
         });
 
         return Promise.all(detailPromises);
-    }
-
-    // declare modalElement variable
-    let modalElement = null;
-
-    function getModalElement () {
-        if (!modalElement) {
-            modalElement = document.querySelector(".box");
-        }
-        return modalElement;
     }
 
     /**
@@ -477,7 +468,7 @@ let pokemonRepository = (function() {
         closeDetailsButton.style.visibility = "visible";
 
         //focus on close button to make for easier closing
-        closeButton = document.getElementById('close-button');
+        let closeButton = document.getElementById('close-button');
         closeButton.focus();
 
         loadDetails(pokemon)
@@ -526,7 +517,7 @@ let pokemonRepository = (function() {
         let modal = document.querySelector('.box');
         let modalChildren = document.querySelectorAll('.box > *');
         //get close button
-        closeButton = document.getElementById('close-button');
+        let closeButton = document.getElementById('close-button');
         //hide model if close button is clicked
         modalChildren.forEach((child) => child.style.visibility = "");
         modal.style.visibility = "hidden";
@@ -534,7 +525,7 @@ let pokemonRepository = (function() {
     }
 
     //get close button
-    closeButton = document.getElementById('close-button');
+    let closeButton = document.getElementById('close-button');
     //hide model if close button is clicked
     closeButton.addEventListener('click', () => {
         clearPokemonDetailsUI();
