@@ -457,7 +457,7 @@ let pokemonRepository = (function () {
       // change sprite image
       pokeImageElement.setAttribute("src", pokeImage)
       pokeImageElement.setAttribute("alt", "main pokemon image")
-      pokeImageElement.setAttribute("id", "pokemon_sprite")
+      pokeImageElement.setAttribute("id", "pokemon-sprite")
       divForSprite.append(pokeImageElement)
 
       // assign side images
@@ -530,7 +530,7 @@ let pokemonRepository = (function () {
     let pokeWeightValue = document.querySelector(".values > .poke-weight")
     let pokeTypesValue = document.querySelector(".values > .poke-types")
     let cardBackgroundDiv = document.querySelector(".pokemon-card")
-    let sprite = document.getElementById("pokemon_sprite")
+    let sprite = document.getElementById("pokemon-sprite")
     let sideImages = document.querySelectorAll(".bg > img")
 
     // clear text
