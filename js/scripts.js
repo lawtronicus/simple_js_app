@@ -396,7 +396,7 @@ let pokemonRepository = (function () {
     const pokeWeightValue = document.querySelector(".values > .poke-weight")
     const pokeTypesValue = document.querySelector(".values > .poke-types")
     const cardBackgroundDiv = document.querySelector(".pokemon-card")
-    const divForSprite = document.querySelector(".imgBx")
+    const divForSprite = document.querySelector(".img-box")
     const leftImageDiv = document.querySelector(".bg1")
     const rightImageDiv = document.querySelector(".bg2")
 
