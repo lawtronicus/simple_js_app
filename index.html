@@ -10,7 +10,7 @@
     <!--    <link rel="stylesheet" href="css/styles.css" /> -->
     <script src="js/promise.polyfill.js"></script>
     <script src="js/fetch.umd.js"></script>
-    <!--    <script src="js/scripts.js" defer></script> -->
+    <script src="js/scripts_bs.js" defer></script>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
@@ -29,65 +29,17 @@
         </nav>
       </div>
       <div class="row justify-content-around main">
-        <div class="pokedex col-10 col-md-8 col-lg-6">
-          <ul class="list-unstyled d-flex flex-wrap justify-content-center">
-            <li class="text-center poke-card m-1">
-              <button
-                type="button"
-                class="btn"
-                data-toggle="modal"
-                data-target="pokemon-details-modal"
-              >
-                <img
-                  src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/35.png"
-                  alt="Clefairy Image"
-                />
-                <p>Pokemon</p>
-              </button>
-            </li>
-            <li class="text-center poke-card m-1">
-              <button
-                type="button"
-                class="btn"
-                data-toggle="modal"
-                data-target="pokemon-details-modal"
-              >
-                <img
-                  src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/35.png"
-                  alt="Clefairy Image"
-                />
-                <p>Pokemon</p>
-              </button>
-            </li>
-            <li class="text-center poke-card m-1">
-              <button
-                type="button"
-                class="btn"
-                data-toggle="modal"
-                data-target="pokemon-details-modal"
-              >
-                <img
-                  src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/35.png"
-                  alt="Clefairy Image"
-                />
-                <p>Pokemon</p>
-              </button>
-            </li>
-            <li class="text-center poke-card m-1">
-              <button
-                type="button"
-                class="btn"
-                data-toggle="modal"
-                data-target="pokemon-details-modal"
-              >
-                <img
-                  src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/35.png"
-                  alt="Clefairy Image"
-                />
-                <p>Pokemon</p>
-              </button>
-            </li>
-          </ul>
+        <div class="frame col-10 col-md-8 col-lg-6">
+          <h2>Pokédex</h2>
+          <div class="screen">
+            <div class="pokedex">
+              <div id="shadow-overlay-left"></div>
+              <ul
+                class="list-unstyled d-flex flex-wrap justify-content-center"
+                id="pokemon-list"
+              ></ul>
+            </div>
+          </div>
         </div>
       </div>
     </div>
