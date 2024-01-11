@@ -33,9 +33,9 @@ body {
 }
 
 .frame {
-  height: 80vh;
   margin-top: 24px;
-  padding: 12px;
+  height: 80vh;
+  padding: 24px;
   background-color: red;
   border-radius: 24px;
   box-shadow:
@@ -80,7 +80,7 @@ body {
   justify-content: center;
   align-items: center;
   width: 140px;
-  transition: all 0.3s ease;
+  transition: all 0.1s ease;
   box-shadow: none;
   box-shadow: inset -1px -1px 5px rgba(0 0 0 / 20%);
 }
@@ -121,4 +121,86 @@ body {
 .poke-card img {
   width: 80px;
   height: 80px;
+}
+
+/* Styling for the modal */
+
+.modal-content {
+  border-radius: 24px;
+  background-color: black;
+  border-top-left-radius: none;
+  border-top-right-radius: none;
+  border: 2px solid white;
+  width: 400px;
+}
+
+.modal-header {
+  border-radius: 20px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border: 2px solid white;
+}
+
+.modal-body {
+  color: white;
+  border: 2px solid white;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+#pokemon-details-img {
+  margin: 12px;
+  width: 150px;
+  filter: drop-shadow(0 0 6px black);
+}
+
+#height-div,
+#weight-div {
+  color: lightgrey;
+}
+
+#types {
+  margin-top: 12px;
+}
+
+#size {
+  margin-top: 12px;
+}
+
+#size h4 {
+  color: white;
+}
+
+#types > p {
+  padding: 4px 20px;
+  border-radius: 24px;
+}
+
+#base-stats {
+  margin-top: 24px;
+  width: 300px;
+}
+
+#base-stats > h4 {
+  margin-bottom: 12px;
+}
+
+#base-stats > div {
+  width: 100%;
+}
+
+#base-stats > div > p {
+  text-align: right;
+}
+
+.ability-bar-container {
+  width: 50%;
+  background-color: #fff;
+  border-radius: 10px;
+  height: 20px;
+  overflow: hidden;
+}
+
+.ability-bar {
+  height: 100%;
 }

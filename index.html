@@ -28,9 +28,107 @@
           </a>
         </nav>
       </div>
+      <div
+        class="modal fade"
+        id="pokemon-details-modal"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="pokemon-details-modal"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog d-flex justify-content-center" role="document">
+          <div class="modal-content">
+            <div class="modal-header d-flex">
+              <div class="poke-header-img col-1 offset-3">
+                <img
+                  id="pokemon-details-img"
+                  src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/3.svg"
+                  alt=""
+                />
+              </div>
+              <div class="close-button-div">
+                <button
+                  type="button"
+                  class="close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+            </div>
+            <div class="modal-body d-flex flex-column align-items-center">
+              <h3 id="poke-name">Pokemon</h3>
+              <div id="types" class="d-flex"></div>
+              <div id="size" class="d-flex">
+                <div
+                  id="height-div"
+                  class="mr-5 d-flex flex-column align-items-center"
+                >
+                  <h4 id="height"></h4>
+                  <p>Height</p>
+                </div>
+                <div
+                  id="weight-div"
+                  class="ml-5 d-flex flex-column align-items-center"
+                >
+                  <h4 id="weight"></h4>
+                  <p>Weight</p>
+                </div>
+              </div>
+              <div
+                id="base-stats"
+                class="d-flex flex-column align-items-center"
+              >
+                <h4>Base Stats</h4>
+                <div id="hp-div" class="d-flex justify-content-right">
+                  <p class="col-4 offset">HP</p>
+                  <div class="ability-bar-container offset-1">
+                    <div class="ability-bar" id="hp"></div>
+                  </div>
+                </div>
+                <div id="atk-div" class="d-flex">
+                  <p class="col-4 offset">ATK</p>
+                  <div class="ability-bar-container offset-1">
+                    <div class="ability-bar" id="attack"></div>
+                  </div>
+                </div>
+                <div id="def-div" class="d-flex">
+                  <p class="col-4 offset">DEF</p>
+                  <div class="ability-bar-container offset-1">
+                    <div class="ability-bar" id="defense"></div>
+                  </div>
+                </div>
+                <div id="sp-atk-div" class="d-flex">
+                  <p class="col-4 offset">SP ATK</p>
+                  <div class="ability-bar-container offset-1">
+                    <div class="ability-bar" id="special-attack"></div>
+                  </div>
+                </div>
+                <div id="sp-def-div" class="d-flex">
+                  <p class="col-4 offset">SP DEF</p>
+                  <div class="ability-bar-container offset-1">
+                    <div class="ability-bar" id="special-defense"></div>
+                  </div>
+                </div>
+                <div id="spd-div" class="d-flex">
+                  <p class="col-4 offset">SPD</p>
+                  <div class="ability-bar-container offset-1">
+                    <div class="ability-bar" id="speed"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="row justify-content-around main">
         <div class="frame col-10 col-md-8 col-lg-6">
-          <h2>Pokédex</h2>
+          <div class="row align-items-center pokedex-frame-title">
+            <div class="col-2">
+              <h2>Pokédex</h2>
+            </div>
+          </div>
           <div class="screen">
             <div class="pokedex">
               <div id="shadow-overlay-left"></div>

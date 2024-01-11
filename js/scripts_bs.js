@@ -13,9 +13,9 @@ let myPokedex = (function () {
   //Create fragment for more efficiently adding pokemon to pokedex
   let fragment = document.createDocumentFragment()
 
-  // create object variable for colors
+  // create object variable for gradients
 
-  const typeColors = {
+  const typeGradients = {
     normal: "linear-gradient(45deg, #A8A878, #C0C0A0)",
     fighting: "linear-gradient(45deg, #C03028, #E05050)",
     flying: "linear-gradient(45deg, #A890F0, #C0B0FF)",
@@ -36,6 +36,41 @@ let myPokedex = (function () {
     fairy: "linear-gradient(45deg, #EE99AC, #FFB8D0)",
     unknown: "linear-gradient(45deg, #68A090, #88C0B0)",
     shadow: "linear-gradient(45deg, #604E82, #8070A0)"
+  }
+
+  // create object variable for colors
+
+  const typeColors = {
+    normal: "#A8A878",
+    fighting: "#C03028",
+    flying: "#A890F0",
+    poison: "#A040A0",
+    ground: "#E0C068",
+    rock: "#B8A038",
+    bug: "#A8B820",
+    ghost: "#705898",
+    steel: "#B8B8D0",
+    fire: "#F08030",
+    water: "#6890F0",
+    grass: "#78C850",
+    electric: "#F8D030",
+    psychic: "#F85888",
+    ice: "#98D8D8",
+    dragon: "#7038F8",
+    dark: "#705848",
+    fairy: "#EE99AC",
+    unknown: "#68A090",
+    shadow: "#604E82"
+  }
+
+  // set ability colors for the ability bar
+  const abilityColors = {
+    hp: "#4CAF50",
+    attack: "#F44336",
+    defense: "#2196F3",
+    "special-attack": "#9C27B0",
+    "special-defense": "#FFD700",
+    speed: "#FF9800"
   }
 
   /**
@@ -90,7 +125,7 @@ let myPokedex = (function () {
    *
    * The function determines the main type of the Pokémon and then assigns a
    * background color to the button element based on this type. If the Pokémon's
-   * type is not found in the typeColors mapping, a default color is used.
+   * type is not found in the typeGradients mapping, a default color is used.
    *
    * @param {Object} pokemon - An object representing a Pokémon.
    *                           It must have a 'types' array with each type having a 'type' object containing a 'name' property.
@@ -98,7 +133,7 @@ let myPokedex = (function () {
    */
   function setBackgroundColor(pokemon, buttonElement) {
     const mainType = detailedPokemon[pokemon.name].types[0] // Assuming the first type is the main type
-    const gradient = typeColors[mainType] || "#A8A878" // Default color if type not found
+    const gradient = typeGradients[mainType] || "#A8A878" // Default color if type not found
     buttonElement.style.background = gradient
   }
 
@@ -133,7 +168,7 @@ let myPokedex = (function () {
     button.classList.add("btn", "poke-button")
     button.setAttribute("type", "button")
     button.setAttribute("data-toggle", "modal")
-    button.setAttribute("data-target", "pokemon-details-modal")
+    button.setAttribute("data-target", "#pokemon-details-modal")
     button.setAttribute("aria-label", `View details for ${pokemon.name}`) // label for accessibility
 
     // set background color for button based on type
@@ -147,15 +182,16 @@ let myPokedex = (function () {
 
     buttonImage.setAttribute("loading", "lazy")
     buttonImage.setAttribute("alt", `${pokemon.name} image`)
+    buttonImage.style.filter = "drop-shadow(0 0 3px black)"
 
     buttonText.textContent = pokemon.name // Directly setting the text content
     button.appendChild(buttonImage)
     button.appendChild(buttonText)
-    /*
+
+    // Add event listener to button
     button.addEventListener("click", function () {
-      showDetails(pokemon)
+      styleModal(pokemon)
     })
-*/
 
     listItem.appendChild(button)
     fragment.appendChild(listItem)
@@ -227,10 +263,13 @@ let myPokedex = (function () {
       const details = await response.json()
 
       let detailsObject = {
+        name: pokemon.name,
         height: details.height,
         weight: details.weight,
         types: details.types.map((typeItem) => typeItem.type.name),
-        imgUrls: details.sprites
+        imgUrls: details.sprites,
+        abilities: details.abilities,
+        stats: details.stats
       }
 
       detailedPokemon[pokemon.name] = detailsObject
@@ -239,6 +278,75 @@ let myPokedex = (function () {
       console.error(`Error loading details for ${pokemon.name}:`, e)
       throw e
     }
+  }
+
+  /**
+   * This function removes appended modal elements
+   */
+  function removeAppendedElements() {
+    const pokeTypes = document.getElementById("types")
+    while (pokeTypes.firstChild) {
+      pokeTypes.removeChild(pokeTypes.firstChild)
+    }
+  }
+
+  /**
+   * This function will set the styling on the ability bar based on the pokemon ability score
+   */
+  function styleAbilityBar(ability, score) {
+    const scorePercentage = (score / 160) * 100
+    document.getElementById(`${ability}`).style.width = scorePercentage + "%"
+    document.getElementById(`${ability}`).style.backgroundColor =
+      abilityColors[ability]
+  }
+
+  /**
+   * This function styles the modal based on the pokemon button that is clicked.
+   * The modal can be closed by hitting the close button, clicking escape, or clicking outside of the modal
+   * @param {object} pokemon - An object representing a Pokémon, must have a 'detailsUrl' property.
+   */
+  function styleModal(pokemon) {
+    // remove appended elements
+    removeAppendedElements()
+    // get detailed pokemon object
+    const pokemonData = detailedPokemon[pokemon.name]
+
+    //get modal elements
+    const pokeName = document.getElementById("poke-name")
+    const modalHeader = document.querySelector(".modal-header")
+    const pokeTypes = document.getElementById("types")
+    const pokeHeight = document.getElementById("height")
+    const pokeWeight = document.getElementById("weight")
+    const pokeImage = document.getElementById("pokemon-details-img")
+
+    // create p elements for the types, give them margin, create the text, and append
+    pokemonData.types.forEach((type) => {
+      const p = document.createElement("p")
+      p.textContent = type
+      p.classList.add("mr-4", "ml-4")
+      p.style.background = typeColors[type]
+      pokeTypes.appendChild(p)
+    })
+
+    // set background color for header
+    modalHeader.style.background = typeGradients[pokemonData["types"][0]]
+
+    // assign pokemon image and give attributes
+    pokeImage.setAttribute(
+      "src",
+      `${detailedPokemon[pokemon.name].imgUrls.other.dream_world.front_default}`
+    )
+    pokeImage.setAttribute("alt", `${pokemon.name} image`)
+
+    // assign values
+    pokeName.innerText = pokemonData.name
+    pokeHeight.innerText = pokemonData.height
+    pokeWeight.innerText = pokemonData.weight
+
+    // style ability score bars based on ability scores
+    pokemonData.stats.forEach((stat) => {
+      styleAbilityBar(stat.stat.name, stat["base_stat"])
+    })
   }
 
   return {
